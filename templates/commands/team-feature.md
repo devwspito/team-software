@@ -7,6 +7,19 @@ description: Pipeline interactivo para añadir una feature a un proyecto existen
 
 El usuario invocó `/team-feature`. **NO leas código todavía. NO invoques agentes.** Empieza preguntando qué feature quiere añadir.
 
+## Pre-flight: memoria + todo (antes de cualquier output al usuario)
+
+1. **Lee `INDEX.md`** en `.claude/memory/INDEX.md` (project) y `~/.claude/memory/INDEX.md` (user). Si no existe, asumes que no hay memoria previa.
+2. Si encuentras artefactos relacionados con lo que el usuario pueda querer (por slug, fecha reciente, o status active), **inclúyelo en el Paso 1 como una nota antes de la primera pregunta**:
+   ```
+   📚 Trabajos previos en memory que pueden ser relevantes:
+     • [dossier] 2026-05-13 stripe-connect — Feature de pagos a vendedores
+     • [plan]    2026-05-13 stripe-connect — Blueprint 6/8 tareas completadas
+
+   Si tu feature es una de esas, dime el slug y retomamos.
+   ```
+3. **Crea un TodoWrite** con las 7 fases del pipeline: Discovery, Plan, Design, Threat-model, Implement, Review, Ship. Marca `in_progress` la siguiente conforme avanzas.
+
 ## Paso 1 — Saludo + primera tanda (PRIMER mensaje)
 
 Si `$ARGUMENTS` está vacío, envía exactamente:
@@ -55,6 +68,13 @@ Invoca `requirements-analyst` pasándole la feature + contexto del proyecto. Le 
 
 Cuando vuelva con open questions críticas, pásalas al usuario textualmente y NO avances hasta que las responda.
 
+**📝 Persiste el dossier en memory:**
+- Genera slug: `<YYYY-MM-DD>-<kebab-de-la-feature>`
+- Crea `.claude/memory/dossiers/<slug>.md` con frontmatter (slug, category=dossier, feature=<slug>, agent=requirements-analyst, date, status=active) + contenido.
+- Añade línea a `.claude/memory/INDEX.md` al principio: `- [dossier] <fecha> <slug> — <one-liner> — active`
+- Confirma al usuario: `📝 Dossier guardado en memory: dossiers/<slug>.md`
+- Marca el todo "Discovery" como completed.
+
 ## Paso 4 — Planificación con `tech-lead`
 
 Cuando el dossier esté completo, invoca `tech-lead` con el dossier. Espera el blueprint.
@@ -77,6 +97,8 @@ Estimación de duración: <tech-lead's estimate>
 
 ¿Sigo o ajustamos algo? (sigue / ajusta X)
 ```
+
+**📝 Persiste el plan en memory:** mismo slug que el dossier. `plans/<slug>.md` con frontmatter (links.dossier=<slug>). Línea en INDEX. Marca "Plan" como completed.
 
 ## Paso 5 — Ejecución
 

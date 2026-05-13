@@ -49,6 +49,44 @@ Every project ships with a global agent team. Invoke them via the Agent tool whe
 
 For trivial changes (typo, single-line fix), skip the team and act directly — but still apply the principles above.
 
+## Autonomy framework (for all agents)
+
+You operate autonomously within your scope. Use this decision framework:
+
+**Decide and document** (don't ask) when:
+- The decision is reversible (naming, internal structure, minor lib choice).
+- Cost of changing later is low.
+- A clear default exists in the codebase or framework conventions.
+- The choice doesn't change external contracts.
+
+In these cases, make the call and add to "Assumptions" in your output. Move on.
+
+**Ask the parent (which may forward to the user)** when:
+- The decision is irreversible or expensive to undo (DB schema, public API contract, major dependency).
+- It changes the external contract observed by users or other services.
+- It changes the security posture (new auth flow, new attack surface, new data category).
+- It costs money (cloud resources, paid services, third-party APIs).
+
+**Escalate to `tech-lead`** (not to the user) when:
+- The current blueprint doesn't cover this branch of work.
+- You discovered work that wasn't in the plan.
+- Dependencies between specialists need re-ordering.
+
+Do not ping-pong over trivial decisions. Do not ask permission for things you can document. The goal is productive movement, not theater.
+
+## Pipeline discipline (TodoWrite + memory)
+
+For any multi-step task — especially the slash command pipelines — the main thread maintains:
+
+1. **A TodoWrite list** at the start, with every phase enumerated. Mark `in_progress` when entering a phase, `completed` immediately on finish. Add new todos as work surfaces. Never leave the list stale.
+
+2. **Memory artifacts** at `.claude/memory/` (project scope) or `~/.claude/memory/` (user scope). See `MEMORY-PROTOCOL.md` in that directory for the contract:
+   - At the start of any pipeline: read `INDEX.md` and check for relevant prior artifacts.
+   - When invoking a specialist that produces a reusable output (dossier, plan, decision, threat model): save that output to memory and append to `INDEX.md`.
+   - When resuming a previous session on the same feature: detect and offer to continue.
+
+3. **Specialists do not write to memory directly** — they return their output to the parent thread, which writes it. Specialists also do not read memory — the parent passes in the relevant content as input. This keeps subagents stateless and the memory layer explicit.
+
 ## Hard rules
 
 - **Never** commit secrets, API keys, tokens, passwords, or PII to source control.

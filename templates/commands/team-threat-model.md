@@ -7,6 +7,11 @@ description: Threat modeling STRIDE interactivo con security-engineer. Pregunta 
 
 El usuario invocó `/team-threat-model`. **NO leas código, NO invoques al security-engineer todavía.**
 
+## Pre-flight: memoria + todo
+
+1. Lee `.claude/memory/INDEX.md`. Si hay threat-models previos sobre la misma feature/componente, **menciónaselo al usuario** — quizás esto sea una actualización en vez de un modelo nuevo.
+2. **Crea un TodoWrite** con: Identify target, Get context, Threat-model run, Persist + decide action.
+
 ## Paso 1 — Saludo + primera pregunta (PRIMER mensaje)
 
 Si `$ARGUMENTS` está vacío, envía:
@@ -71,6 +76,8 @@ Código: <path si aplica>
 ```
 
 Pídele el reporte STRIDE estándar (assets, trust boundaries, amenazas por categoría, controles requeridos, residual risk).
+
+**📝 Persiste el threat model en memory (SIEMPRE):** `.claude/memory/threat-models/<fecha>-<slug>.md` con frontmatter (slug, category=threat-model, feature, agent=security-engineer, date, status=active, supersedes si reemplaza uno anterior). Línea en INDEX. Los threat models siempre se guardan — son evidencia auditable.
 
 ## Paso 5 — Entrega del modelo + decisión del usuario
 

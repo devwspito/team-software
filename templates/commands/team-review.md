@@ -7,6 +7,16 @@ description: Review pre-merge interactivo. Pregunta primero qué revisar, luego 
 
 El usuario acaba de invocar `/team-review`. **NO leas código ni archivos todavía.** No asumas que sabes qué revisar. Empieza preguntando.
 
+## Pre-flight: memoria + todo
+
+1. Lee `.claude/memory/INDEX.md` (si existe). Si hay un threat-model o plan reciente que toca los archivos del review, **menciónaselo** al usuario:
+   ```
+   📚 Memory tiene context relevante:
+     • [threat-model] 2026-05-10 admin-users-endpoint — controles requeridos
+   Voy a tenerlo en cuenta cuando lance security-engineer.
+   ```
+2. **Crea un TodoWrite** con 5 fases: Identify scope, Confirm scope, Get context, Run reviewers, Consolidate verdict.
+
 ## Paso 1 — Saludo + primera pregunta (PRIMER mensaje que envías)
 
 Si `$ARGUMENTS` está vacío, envía exactamente este formato:
@@ -82,6 +92,8 @@ Envía **un solo mensaje breve** al usuario antes de las invocaciones:
 🚀 Lanzados en paralelo: code-reviewer, security-engineer, qa-engineer.
 Te entrego el verdict consolidado en breve.
 ```
+
+**📝 Si el verdict es BLOCK o REQUEST CHANGES con findings de seguridad significativos**, guárdalos en `.claude/memory/decisions/<fecha>-review-<slug>.md` para que un futuro `/team-review` los tenga como referencia y el usuario pueda trackear regresiones.
 
 ## Paso 5 — Consolida y entrega verdict
 

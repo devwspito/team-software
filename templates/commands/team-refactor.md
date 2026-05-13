@@ -7,6 +7,11 @@ description: Refactor interactivo coordinado por refactoring-specialist con red 
 
 El usuario invocó `/team-refactor`. **NO leas archivos ni invoques agentes todavía.** No asumas qué refactorizar.
 
+## Pre-flight: memoria + todo
+
+1. Lee `.claude/memory/INDEX.md`. Si hay refactors previos sobre el mismo archivo/módulo, **léelos** para no repetir trabajo ya hecho o entrar en conflicto con decisiones anteriores.
+2. **Crea un TodoWrite** con: Identify target, Verify tests, Diagnose smells, Plan refactor, Execute steps, Final review.
+
 ## Paso 1 — Saludo + primera pregunta (PRIMER mensaje)
 
 Si `$ARGUMENTS` está vacío, envía:
@@ -135,6 +140,8 @@ Cuando el plan termine, invoca `code-reviewer` para confirmar:
 - No cambio de comportamiento (lo verifican los tests, pero validación cruzada).
 - Mejora real en SOLID/SRP/modularidad/clean code.
 - Smells iniciales resueltos.
+
+**📝 Persiste el refactor en memory:** `.claude/memory/decisions/<fecha>-refactor-<slug>.md` con: target, smells encontrados, refactorings aplicados, smells remanentes para futuras pasadas. Añade línea a INDEX.
 
 ## Paso 9 — Entrega
 

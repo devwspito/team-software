@@ -1,7 +1,7 @@
 {
   "name": "team-software",
-  "version": "0.3.0",
-  "description": "Equipo de ingeniería de software de élite (11 agentes + 6 slash commands interactivos) para Claude Code — Security first, SOLID, DDD, SRP, Clean Code, Modularidad, Orquestación. Instalable globalmente con npx en cualquier proyecto.",
+  "version": "0.4.0",
+  "description": "Equipo de ingeniería de software de élite (11 agentes + 6 slash commands interactivos + memory persistente) para Claude Code — Security first, SOLID, DDD, SRP, Clean Code, Modularidad, Orquestación. Autonomía, TodoWrite y continuidad entre sesiones built-in.",
   "keywords": [
     "claude-code",
     "claude",

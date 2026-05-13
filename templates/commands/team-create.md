@@ -7,6 +7,16 @@ description: Crea un proyecto nuevo desde cero — visión → stack → estruct
 
 El usuario invocó `/team-create`. **NO escribas archivos, no leas filesystem, no invoques agentes todavía.** Hay un proyecto vacío por crear y necesitas entender qué.
 
+## Pre-flight: memoria + todo
+
+1. Verifica si ya hay un proyecto en cwd (`ls`, `git status`). Si hay archivos existentes, **avisa al usuario** — `/team-create` es para greenfield:
+   ```
+   ⚠ Detecto que ya hay archivos en este directorio. /team-create asume proyecto vacío.
+   ¿Quieres: (a) crearlo en un subdir, (b) crearlo aquí sobrescribiendo, (c) usar /team-feature en su lugar?
+   ```
+2. Si hay memoria global (`~/.claude/memory/INDEX.md`), revísala por si hay un dossier o decisiones que el usuario pueda querer reusar (ej: el usuario ya creó algo similar antes).
+3. **Crea un TodoWrite** con las 10 fases. Mark `in_progress` la primera.
+
 ## Paso 1 — Saludo + primera tanda de preguntas (PRIMER mensaje)
 
 Envía exactamente:
@@ -61,6 +71,8 @@ Si tras las 7 preguntas hay aún algo crítico sin resolver, pregúntalo en **un
 
 **Nunca pases de 3 tandas de preguntas.** Si después de eso aún hay huecos, los listas como "asunciones que voy a hacer" en el plan.
 
+**📝 Persiste el contexto inicial en memory:** crea `~/.claude/memory/dossiers/<YYYY-MM-DD>-<slug>.md` con las respuestas del usuario. Slug = kebab del nombre del proyecto propuesto. Línea en INDEX global. Esta es la entrada de pre-discovery, irá enriquecida en el siguiente paso.
+
 ## Paso 4 — Discovery profundo con `requirements-analyst`
 
 Con todas las respuestas, invoca `requirements-analyst` pasándole **el resumen estructurado** de lo respondido. Pídele que produzca:
@@ -71,6 +83,8 @@ Con todas las respuestas, invoca `requirements-analyst` pasándole **el resumen 
 - Ubiquitous language
 - Open questions remanentes
 
+**📝 Actualiza el dossier en memory** con el resultado del requirements-analyst. Sobrescribe el archivo creado en Paso 3.
+
 ## Paso 5 — Stack + arquitectura + datos + seguridad + infra (paralelo)
 
 **Un solo turno, 4 Agent calls paralelas:**
@@ -80,6 +94,14 @@ Con todas las respuestas, invoca `requirements-analyst` pasándole **el resumen 
 - `security-engineer` — threat model día cero + modelo auth + datos sensibles + audit
 - `devops-engineer` — hosting + CI desde commit 1 + observabilidad mínima + secrets strategy
 
+**📝 Persiste cada output en memory** (todo en `~/.claude/memory/` porque aún no hay proyecto):
+- `decisions/<fecha>-<slug>-stack.md` (del architect, una por decisión clave)
+- `decisions/<fecha>-<slug>-storage.md` (del database-engineer)
+- `threat-models/<fecha>-<slug>.md` (del security-engineer)
+- `decisions/<fecha>-<slug>-infra.md` (del devops-engineer)
+
+Después del scaffolding (Paso 8), **mueve** todos los artefactos de `~/.claude/memory/` al `.claude/memory/` del proyecto recién creado. La memoria sigue al proyecto.
+
 ## Paso 6 — MVP slice con `tech-lead`
 
 Con todo lo anterior, `tech-lead` produce:
@@ -88,6 +110,8 @@ Con todo lo anterior, `tech-lead` produce:
 - Work breakdown con especialista asignado
 - Orden / paralelismo
 - Definition of done del MVP
+
+**📝 Persiste el plan en memory:** `plans/<fecha>-<slug>.md` con links a dossier + decisions + threat-model.
 
 ## Paso 7 — **Confirmación BLOQUEANTE** antes de escribir nada
 

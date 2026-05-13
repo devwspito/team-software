@@ -108,6 +108,7 @@ function cmdInstall(args) {
   console.log(`> Instalando team-software en scope=${scope.name}`);
   console.log(`  agentes:  ${scope.agentsDir}`);
   console.log(`  commands: ${scope.commandsDir}`);
+  console.log(`  memory:   ${scope.memoryDir}`);
   if (installClaudeMd) console.log(`  CLAUDE.md: ${scope.claudeMdPath}`);
   console.log('');
 
@@ -120,6 +121,11 @@ function cmdInstall(args) {
   console.log(`✓ Commands creados: ${result.commandsCreated.length}/${COMMAND_NAMES.length}`);
   if (result.commandsSkipped.length) {
     console.log(`  saltados: ${result.commandsSkipped.length} (ya existían — usa --force)`);
+  }
+  if (result.memoryAlreadyExisted) {
+    console.log(`· Memory preservado (artefactos existentes intactos)`);
+  } else {
+    console.log(`✓ Memory inicializado (INDEX.md + PROTOCOL.md + subdirs)`);
   }
   if (installClaudeMd) {
     if (result.claudeMdCreated) console.log(`✓ CLAUDE.md instalado`);
@@ -178,6 +184,7 @@ function cmdStatus(args) {
 
   console.log(`team-software status (scope=${scope.name})\n`);
   console.log(`  ${s.claudeMdInstalled ? '✓' : '·'} CLAUDE.md  (${scope.claudeMdPath})`);
+  console.log(`  ${s.memoryReady ? '✓' : '·'} memory     (${scope.memoryDir}) — ${s.memoryArtifactCount} artefactos`);
   console.log('');
   console.log(`  agentes (${s.agentsInstalled.length}/${AGENT_NAMES.length}):`);
   for (const name of AGENT_NAMES) {
@@ -191,11 +198,11 @@ function cmdStatus(args) {
     console.log(`    ${ok ? '✓' : '·'} /${name}`);
   }
   const missing = s.agentsMissing.length + s.commandsMissing.length;
-  if (missing > 0) {
+  if (missing > 0 || !s.memoryReady) {
     console.log('');
     console.log(`  → corre: npx github:devwspito/team-software install --scope ${scope.name}`);
   }
-  process.exit(missing === 0 ? 0 : 1);
+  process.exit(missing === 0 && s.memoryReady ? 0 : 1);
 }
 
 function cmdList() {
@@ -233,6 +240,7 @@ function cmdUninstall(args) {
   console.log(`  agentes:   ${scope.agentsDir}`);
   console.log(`  commands:  ${scope.commandsDir}`);
   if (removeClaudeMd) console.log(`  CLAUDE.md: ${scope.claudeMdPath} (solo si lleva marcador team-software)`);
+  console.log(`  memory:    ${scope.memoryDir} (PRESERVADO — uninstall no toca artefactos)`);
   console.log('');
 
   if (!opts.yes) {
@@ -245,6 +253,10 @@ function cmdUninstall(args) {
   console.log(`✓ Commands eliminados: ${result.commandsRemoved.length}`);
   if (result.claudeMdRemoved) console.log(`✓ CLAUDE.md eliminado`);
   else if (removeClaudeMd) console.log(`· CLAUDE.md no se tocó (no presente o sin marcador team-software)`);
+  if (result.memoryPreservedAt) {
+    console.log(`· memory preservado: ${result.memoryPreservedAt}`);
+    console.log(`  (si quieres eliminarla manualmente: rm -rf "${result.memoryPreservedAt}")`);
+  }
 }
 
 function parseFlags(args, schema) {

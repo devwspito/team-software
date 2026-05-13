@@ -7,6 +7,15 @@ description: Production readiness check interactivo con devops-engineer + securi
 
 El usuario invocó `/team-ship`. **NO escanees archivos ni invoques agentes todavía.**
 
+## Pre-flight: memoria + todo
+
+1. Lee `.claude/memory/INDEX.md`. Busca:
+   - `decisions/*infra*` — hosting/CI/secrets decisions ya tomadas
+   - `threat-models/*` — controles requeridos que devops debe verificar
+   - `decisions/*review*` — issues pendientes que podrían bloquear el deploy
+   Si encuentras algo relevante, **menciónalo al usuario antes de la primera pregunta**.
+2. **Crea un TodoWrite** con: Identify service, Confirm repo state, Run readiness check, Verdict, Deploy decision, Post-deploy smoke (si deploy).
+
 ## Paso 1 — Saludo + primera pregunta (PRIMER mensaje)
 
 Si `$ARGUMENTS` está vacío, envía:
@@ -121,6 +130,8 @@ Volviendo con el verdict en breve...
   (b) Si READY WITH CONDITIONS: te paso los avisos y deploy con tu OK
   (c) Si NOT READY: te dejo el listado y tú decides cuándo volver con /team-ship
 ```
+
+**📝 Persiste el verdict en memory:** `.claude/memory/decisions/<fecha>-ship-<servicio>.md` con verdict, bloqueos, plan de deploy, commit SHA. Si NOT READY, esto sirve como checkpoint para el siguiente `/team-ship`.
 
 ## Paso 5 — Deploy (solo con autorización explícita)
 

@@ -2,9 +2,11 @@
 
 Equipo de ingeniería de software de élite para [Claude Code](https://docs.claude.com/en/docs/agents/claude-code/overview). Instalable en un comando.
 
-**11 agentes especializados + 5 slash commands + CLAUDE.md global de principios.**
+**11 agentes especializados · 6 slash commands interactivos · CLAUDE.md global de principios · memoria persistente.**
 
 > **No negociables:** Security first · SOLID · DDD · SRP · Clean Code · Modularidad · Orquestación.
+
+**v0.4.0:** Autonomía documentada por agente · TodoWrite disciplinado por pipeline · memoria de proyecto en `.claude/memory/` para handoff entre agentes y continuidad entre sesiones.
 
 ---
 
@@ -79,6 +81,56 @@ npx github:devwspito/team-software list
 | `/team-refactor <target>` | Refactor seguro coordinado con red de tests verificada por `qa-engineer`. Two-phase change (Tidy First). |
 | `/team-threat-model <feature>` | STRIDE threat modeling con `security-engineer`. Controles concretos y testeables. |
 | `/team-ship <servicio>` | Production readiness check con `devops-engineer` + `security-engineer` antes de deploy. |
+
+---
+
+## Autonomía, TodoWrite y memoria (v0.4.0)
+
+Tres mecanismos que hacen que el equipo trabaje sin ping-pong constante:
+
+### Autonomía documentada
+
+Cada agente tiene una sección "Autonomy rules" que define **cuándo decide solo y documenta** vs **cuándo escala**. Regla simple:
+
+- **Decide y documenta** (sin preguntar): decisiones reversibles, internas, con default claro en el código.
+- **Pregunta al usuario**: cambios irreversibles, contratos externos, postura de seguridad, dinero.
+- **Escala a `tech-lead`** (no al usuario): el blueprint no cubre este caso, surgió trabajo nuevo, hay que re-secuenciar.
+
+Resultado: menos preguntas triviales, movimiento productivo, control en lo que importa.
+
+### TodoWrite disciplinado por pipeline
+
+Los slash commands (`/team-feature`, `/team-create`, etc.) crean un `TodoWrite` con todas las fases al inicio y van marcando `completed` conforme avanzan. Beneficios:
+
+- Ves el progreso real en cada momento sin tener que preguntar.
+- Si interrumpes una sesión, al volver el thread principal tiene la lista y puede continuar.
+- Los specialists tienen sus propios TodoWrites internos; el master vive en el thread principal.
+
+### Memoria persistente — `.claude/memory/`
+
+Estructura instalada en `.claude/memory/` (project) o `~/.claude/memory/` (user):
+
+```
+memory/
+├── INDEX.md             # 1 línea por artefacto, newest first
+├── PROTOCOL.md          # contrato detallado de uso
+├── dossiers/            # output de requirements-analyst
+├── plans/               # output de tech-lead
+├── decisions/           # ADRs ligeros (arquitectura, refactor, ship)
+├── threat-models/       # output de /team-threat-model (siempre se guarda)
+└── artifacts/           # cualquier output reutilizable
+```
+
+**Cómo funciona:**
+
+1. **Pre-flight de cada slash command:** el thread principal lee `INDEX.md`. Si hay artefactos relacionados (mismo slug/feature/tema), te avisa antes de la primera pregunta — puedes elegir reusar o empezar limpio.
+2. **Handoff entre agentes:** el thread principal pasa al siguiente agente el output del anterior como input. Los agentes son **stateless** — no leen ni escriben memoria. Es el thread quien orquesta.
+3. **Persistencia continua:** cada fase importante (dossier, plan, decisión, threat-model, refactor, review con findings) se guarda automáticamente con frontmatter trackeable.
+4. **Continuidad entre sesiones:** si vuelves al día siguiente y corres `/team-feature` sobre lo mismo, detecta el trabajo previo y pregunta `¿continuamos donde lo dejamos?`.
+
+**Lo que NO se guarda:** scratch work, intentos fallidos, secretos. Memory es para entregas, no para historial.
+
+**Memory es commiteable al repo** (scope project). El equipo entero ve las decisiones tomadas. El uninstall **nunca** borra memoria — es trabajo del usuario.
 
 ---
 
@@ -176,15 +228,19 @@ team-software/
 ├── bin/team-software.js          # CLI
 ├── lib/
 │   ├── index.js                  # re-exports
-│   ├── scope.js                  # scope resolution + agent/command lists
-│   ├── install.js                # copia plantillas
-│   ├── status.js                 # qué hay instalado
-│   ├── uninstall.js              # elimina managed
+│   ├── scope.js                  # scope resolution + listas de agents/commands/memory-subdirs
+│   ├── install.js                # copia plantillas + scaffolding memory
+│   ├── update.js                 # actualiza managed sin tocar memory
+│   ├── status.js                 # qué hay instalado + memory ready/count
+│   ├── uninstall.js              # elimina managed, preserva memory
 │   └── agent-meta.js             # metadata para `list`
 ├── templates/
-│   ├── CLAUDE.md                 # principios globales
-│   ├── agents/                   # 11 prompts especializados
-│   └── commands/                 # 5 slash commands
+│   ├── CLAUDE.md                 # principios + autonomy + memory protocol
+│   ├── agents/                   # 11 prompts especializados (con autonomy rules)
+│   ├── commands/                 # 6 slash commands interactivos (con todo + memory I/O)
+│   └── memory/
+│       ├── INDEX.md              # plantilla inicial
+│       └── PROTOCOL.md           # contrato de uso de memoria
 ├── .claude-plugin/
 │   └── plugin.json               # manifest para plugin nativo
 └── package.json
