@@ -6,6 +6,8 @@ Equipo de ingeniería de software de élite para [Claude Code](https://docs.clau
 
 > **No negociables:** Security first · SOLID · DDD · SRP · Clean Code · Modularidad · Orquestación.
 
+**v0.6.0:** `update` resistente — instala fresh si no hay nada previo, avisa cuando tu npx tiene cache stale (comparando contra GitHub).
+
 **v0.5.0:** Sub-team UI/UX completo (ux-researcher · interaction-designer · visual-designer · accessibility-specialist · content-designer) + `/team-ux-audit` para debug interactivo de demos.
 
 **v0.4.0:** Autonomía documentada por agente · TodoWrite disciplinado por pipeline · memoria de proyecto en `.claude/memory/`.
@@ -181,20 +183,27 @@ npx github:devwspito/team-software help
 | `user` (default) | `~/.claude/agents/`<br>`~/.claude/commands/`<br>`~/.claude/CLAUDE.md` | Quieres el equipo en **todos** tus proyectos. |
 | `project` | `./.claude/agents/`<br>`./.claude/commands/`<br>`./CLAUDE.md` | Solo para este proyecto. Commiteable al repo. |
 
-### Update
+### Update (un comando para todo)
 
-Cuando salga una nueva versión del paquete (nuevos agentes, mejores prompts, fixes), corre:
+Para cualquier situación:
 
 ```bash
-npx github:devwspito/team-software update
+npx github:devwspito/team-software#main update
 ```
 
-- **Autodetecta el scope** en el que tienes la instalación (mira si `~/.claude/` o `./.claude/` tienen archivos del paquete).
-- Si tienes instalado en **ambos** scopes (user y project), pide `--scope` explícito para evitar tocar el equivocado.
-- `--keep-claude-md` actualiza solo agentes y commands, preservando tu `CLAUDE.md` si lo has customizado.
-- Idempotente. Lo puedes correr cuantas veces quieras.
+Comportamiento:
 
-`npx` siempre clona/cachea la última versión del repo, así que `update` siempre te trae lo más reciente sin que tengas que recordar versiones.
+- **Sin instalación previa** → instala fresh en `scope=user` (o el que indiques con `--scope`).
+- **Instalación previa en un scope** → refresca con `--force` (sobrescribe agentes/commands/CLAUDE.md managed).
+- **Instalación en ambos scopes** → pide `--scope` explícito.
+- **npx con cache stale** → detecta que tu versión local es vieja vs GitHub main y te muestra el comando exacto para forzar refresh.
+
+Flags:
+
+- `--scope user|project` — fuerza el scope (default: detectar; si nada existe, user).
+- `--keep-claude-md` — preserva tu `CLAUDE.md` si lo has customizado.
+
+> **Tip:** añade `#main` al specifier (`github:devwspito/team-software#main`) para forzar a `npx` a refetch del HEAD de main siempre. Sin eso, npx cachea agresivamente y puedes quedarte en una versión vieja sin darte cuenta.
 
 ### Opciones de install
 

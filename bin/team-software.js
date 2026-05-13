@@ -8,10 +8,11 @@ const { update } = require('../lib/update');
 const { status } = require('../lib/status');
 const { uninstall } = require('../lib/uninstall');
 const { resolveScope, AGENT_NAMES, COMMAND_NAMES } = require('../lib/scope');
+const { checkRemoteVersion, compareVersions } = require('../lib/version-check');
 
 const PKG = require('../package.json');
 
-function main(argv) {
+async function main(argv) {
   const args = argv.slice(2);
   const cmd = args[0];
 
@@ -52,9 +53,11 @@ COMANDOS
     --no-claude-md            No instalar CLAUDE.md (solo agentes + commands)
     --agents-only             Alias de --no-claude-md
 
-  update                    Actualiza una instalación existente a la versión
-                            del paquete actual. Autodetecta el scope.
-    --scope <user|project>    fuerza el scope (si tienes ambos instalados)
+  update                    Asegura la última versión. Si ya hay instalación,
+                            la refresca. Si no, instala fresh (scope=user por
+                            defecto, o el indicado con --scope). Avisa si tu
+                            npx tiene una versión cacheada vieja.
+    --scope <user|project>    fuerza el scope (default: detectar / user)
     --keep-claude-md          no tocar CLAUDE.md (preserva customizaciones)
 
   status                    Muestra qué partes están instaladas.
@@ -143,11 +146,25 @@ function cmdInstall(args) {
   console.log('  Prueba: /team-feature "describe tu feature aquí"');
 }
 
-function cmdUpdate(args) {
+async function cmdUpdate(args) {
   const opts = parseFlags(args, {
     string: ['scope'],
     boolean: ['keep-claude-md'],
   });
+
+  // Best-effort: warn if running a stale npx cache before doing anything.
+  const remoteVersion = await checkRemoteVersion();
+  if (remoteVersion && compareVersions(PKG.version, remoteVersion) < 0) {
+    console.error('');
+    console.error(`⚠ Tu instalación de team-software está corriendo v${PKG.version}, pero GitHub main está en v${remoteVersion}.`);
+    console.error('  Probablemente tu npx tiene una versión vieja en cache. Para forzar latest:');
+    console.error('');
+    console.error('    npx -y github:devwspito/team-software#main update');
+    console.error('');
+    console.error('  (el `#main` invalida el cache de npx)');
+    console.error('  Continúo con la versión local, pero los nuevos features no van a aparecer.');
+    console.error('');
+  }
 
   let result;
   try {
@@ -161,21 +178,33 @@ function cmdUpdate(args) {
   }
 
   const sc = resolveScope(result.scope.name);
-  console.log(`> Actualizando team-software (scope=${result.scope.name})`);
+  const action = result.isFreshInstall ? 'Instalando' : 'Actualizando';
+  console.log(`> ${action} team-software (scope=${result.scope.name})`);
+  if (result.isFreshInstall) {
+    console.log(`  (sin instalación previa detectada — instalando fresh)`);
+  }
   console.log(`  agentes:  ${sc.agentsDir}`);
   console.log(`  commands: ${sc.commandsDir}`);
+  console.log(`  memory:   ${sc.memoryDir}`);
   if (!opts['keep-claude-md']) console.log(`  CLAUDE.md: ${sc.claudeMdPath}`);
   console.log('');
-  console.log(`✓ Agentes actualizados:  ${result.agentsRefreshed}/${AGENT_NAMES.length}`);
-  console.log(`✓ Commands actualizados: ${result.commandsRefreshed}/${COMMAND_NAMES.length}`);
+  const label = result.isFreshInstall ? 'creados' : 'actualizados';
+  console.log(`✓ Agentes ${label}:  ${result.agentsRefreshed}/${AGENT_NAMES.length}`);
+  console.log(`✓ Commands ${label}: ${result.commandsRefreshed}/${COMMAND_NAMES.length}`);
   if (opts['keep-claude-md']) {
     console.log(`· CLAUDE.md preservado (--keep-claude-md)`);
   } else if (result.claudeMdRefreshed) {
-    console.log(`✓ CLAUDE.md actualizado`);
+    console.log(`✓ CLAUDE.md ${label}`);
   }
   console.log('');
   console.log(`Versión del paquete: ${PKG.version}`);
-  console.log('Para forzar reinstalación completa: install --force');
+  if (result.isFreshInstall) {
+    if (result.scope.name === 'project') {
+      console.log('Siguiente paso: abre Claude Code en este proyecto.');
+    } else {
+      console.log('Siguiente paso: disponible en cualquier proyecto. Prueba: /team-feature');
+    }
+  }
 }
 
 function cmdStatus(args) {
@@ -297,4 +326,7 @@ function die(msg) {
   process.exit(2);
 }
 
-main(process.argv);
+main(process.argv).catch((err) => {
+  console.error(`team-software: ${err && err.message ? err.message : err}`);
+  process.exit(2);
+});
