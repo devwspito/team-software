@@ -4,6 +4,7 @@
 const path = require('path');
 
 const { install } = require('../lib/install');
+const { update } = require('../lib/update');
 const { status } = require('../lib/status');
 const { uninstall } = require('../lib/uninstall');
 const { resolveScope, AGENT_NAMES, COMMAND_NAMES } = require('../lib/scope');
@@ -20,6 +21,9 @@ function main(argv) {
   switch (cmd) {
     case 'install':
       return cmdInstall(args.slice(1));
+    case 'update':
+    case 'upgrade':
+      return cmdUpdate(args.slice(1));
     case 'status':
       return cmdStatus(args.slice(1));
     case 'list':
@@ -48,6 +52,11 @@ COMANDOS
     --no-claude-md            No instalar CLAUDE.md (solo agentes + commands)
     --agents-only             Alias de --no-claude-md
 
+  update                    Actualiza una instalación existente a la versión
+                            del paquete actual. Autodetecta el scope.
+    --scope <user|project>    fuerza el scope (si tienes ambos instalados)
+    --keep-claude-md          no tocar CLAUDE.md (preserva customizaciones)
+
   status                    Muestra qué partes están instaladas.
     --scope <user|project>    (default: user)
 
@@ -62,6 +71,7 @@ COMANDOS
   help                      Esta ayuda
 
 SLASH COMMANDS (después de install, dentro de Claude Code)
+  /team-create <visión>           Proyecto nuevo desde cero: visión → stack → scaffolding → MVP slice
   /team-feature <descripción>     Pipeline completo: discovery → plan → design → impl → review → ship
   /team-review [archivos]         Pre-merge: code-reviewer + security-engineer + qa-engineer (paralelo)
   /team-refactor <target>         Refactor seguro con red de tests
@@ -71,7 +81,8 @@ SLASH COMMANDS (después de install, dentro de Claude Code)
 EJEMPLOS
   npx github:devwspito/team-software install                       # equipo global (~/.claude/)
   npx github:devwspito/team-software install --scope project       # solo este proyecto (./.claude/)
-  npx github:devwspito/team-software install --force               # sobrescribe
+  npx github:devwspito/team-software update                        # actualiza a la última versión del paquete
+  npx github:devwspito/team-software update --keep-claude-md       # actualiza agentes y commands, conserva CLAUDE.md
   npx github:devwspito/team-software status
   npx github:devwspito/team-software list
   npx github:devwspito/team-software uninstall --scope project --yes
@@ -125,6 +136,41 @@ function cmdInstall(args) {
   console.log('  Prueba: /team-feature "describe tu feature aquí"');
 }
 
+function cmdUpdate(args) {
+  const opts = parseFlags(args, {
+    string: ['scope'],
+    boolean: ['keep-claude-md'],
+  });
+
+  let result;
+  try {
+    result = update({
+      scope: opts.scope,
+      keepClaudeMd: !!opts['keep-claude-md'],
+    });
+  } catch (e) {
+    console.error(`team-software: ${e.message}`);
+    process.exit(2);
+  }
+
+  const sc = resolveScope(result.scope.name);
+  console.log(`> Actualizando team-software (scope=${result.scope.name})`);
+  console.log(`  agentes:  ${sc.agentsDir}`);
+  console.log(`  commands: ${sc.commandsDir}`);
+  if (!opts['keep-claude-md']) console.log(`  CLAUDE.md: ${sc.claudeMdPath}`);
+  console.log('');
+  console.log(`✓ Agentes actualizados:  ${result.agentsRefreshed}/${AGENT_NAMES.length}`);
+  console.log(`✓ Commands actualizados: ${result.commandsRefreshed}/${COMMAND_NAMES.length}`);
+  if (opts['keep-claude-md']) {
+    console.log(`· CLAUDE.md preservado (--keep-claude-md)`);
+  } else if (result.claudeMdRefreshed) {
+    console.log(`✓ CLAUDE.md actualizado`);
+  }
+  console.log('');
+  console.log(`Versión del paquete: ${PKG.version}`);
+  console.log('Para forzar reinstalación completa: install --force');
+}
+
 function cmdStatus(args) {
   const opts = parseFlags(args, { string: ['scope'] });
   const scope = resolveScope(opts.scope);
@@ -163,6 +209,7 @@ function cmdList() {
   }
   console.log(`SLASH COMMANDS (${COMMAND_NAMES.length}):\n`);
   const cmdDesc = {
+    'team-create': 'Proyecto nuevo desde cero: visión → stack → scaffolding → MVP slice',
     'team-feature': 'Pipeline completo: discovery → plan → design → impl → review → ship',
     'team-review': 'Pre-merge: code-reviewer + security-engineer + qa-engineer (paralelo)',
     'team-refactor': 'Refactor seguro coordinado bajo red de tests',

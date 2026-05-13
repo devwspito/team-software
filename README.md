@@ -73,7 +73,8 @@ npx github:devwspito/team-software list
 
 | Command | Qué hace |
 |---|---|
-| `/team-feature <descripción>` | Pipeline completo de feature: requirements → plan → design → impl → review → ship. Orquesta todos los especialistas en secuencia. |
+| `/team-create <visión>` | **Proyecto nuevo desde cero.** Discovery profundo (visión, personas, NFRs, restricciones) → elección de stack justificada → arquitectura inicial → MVP slice → scaffolding del repo con CI desde commit 1. Pregunta antes de generar código. |
+| `/team-feature <descripción>` | Pipeline completo de feature sobre un proyecto existente: requirements → plan → design → impl → review → ship. Orquesta todos los especialistas en secuencia. |
 | `/team-review [archivos]` | Review pre-merge — `code-reviewer` + `security-engineer` + `qa-engineer` en paralelo. Verdict consolidado. |
 | `/team-refactor <target>` | Refactor seguro coordinado con red de tests verificada por `qa-engineer`. Two-phase change (Tidy First). |
 | `/team-threat-model <feature>` | STRIDE threat modeling con `security-engineer`. Controles concretos y testeables. |
@@ -102,6 +103,7 @@ Para tareas triviales (typo, una línea), salta el equipo — los principios se 
 
 ```bash
 npx github:devwspito/team-software install [--scope user|project] [--force] [--no-claude-md]
+npx github:devwspito/team-software update  [--scope user|project] [--keep-claude-md]
 npx github:devwspito/team-software status  [--scope user|project]
 npx github:devwspito/team-software list
 npx github:devwspito/team-software uninstall [--scope user|project] [--keep-claude-md] --yes
@@ -118,9 +120,24 @@ npx github:devwspito/team-software help
 | `user` (default) | `~/.claude/agents/`<br>`~/.claude/commands/`<br>`~/.claude/CLAUDE.md` | Quieres el equipo en **todos** tus proyectos. |
 | `project` | `./.claude/agents/`<br>`./.claude/commands/`<br>`./CLAUDE.md` | Solo para este proyecto. Commiteable al repo. |
 
+### Update
+
+Cuando salga una nueva versión del paquete (nuevos agentes, mejores prompts, fixes), corre:
+
+```bash
+npx github:devwspito/team-software update
+```
+
+- **Autodetecta el scope** en el que tienes la instalación (mira si `~/.claude/` o `./.claude/` tienen archivos del paquete).
+- Si tienes instalado en **ambos** scopes (user y project), pide `--scope` explícito para evitar tocar el equivocado.
+- `--keep-claude-md` actualiza solo agentes y commands, preservando tu `CLAUDE.md` si lo has customizado.
+- Idempotente. Lo puedes correr cuantas veces quieras.
+
+`npx` siempre clona/cachea la última versión del repo, así que `update` siempre te trae lo más reciente sin que tengas que recordar versiones.
+
 ### Opciones de install
 
-- `--force` — Sobrescribe agentes, commands o CLAUDE.md existentes.
+- `--force` — Sobrescribe agentes, commands o CLAUDE.md existentes. (Para refresh manual; en lugar de `--force` usa `update`.)
 - `--no-claude-md` (alias `--agents-only`) — Solo instala agentes y commands.
 - En `uninstall`: `--keep-claude-md` para no tocar el CLAUDE.md. El uninstall solo elimina CLAUDE.md si lleva el marcador `team-software:managed`.
 

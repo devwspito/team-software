@@ -1,7 +1,7 @@
 {
   "name": "team-software",
-  "version": "0.1.0",
-  "description": "Equipo de ingeniería de software de élite (10 agentes) para Claude Code — Security first, SOLID, DDD, SRP, Clean Code, Modularidad, Orquestación. Instalable globalmente con npx en cualquier proyecto.",
+  "version": "0.2.0",
+  "description": "Equipo de ingeniería de software de élite (11 agentes + 5 slash commands) para Claude Code — Security first, SOLID, DDD, SRP, Clean Code, Modularidad, Orquestación. Instalable globalmente con npx en cualquier proyecto.",
   "keywords": [
     "claude-code",
     "claude",
@@ -27,6 +27,7 @@
   "exports": {
     ".": "./lib/index.js",
     "./lib/install": "./lib/install.js",
+    "./lib/update": "./lib/update.js",
     "./lib/status": "./lib/status.js",
     "./lib/uninstall": "./lib/uninstall.js",
     "./lib/scope": "./lib/scope.js"
