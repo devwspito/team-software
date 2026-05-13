@@ -74,13 +74,20 @@ COMANDOS
   help                      Esta ayuda
 
 SLASH COMMANDS (después de install, dentro de Claude Code)
-  /team-create <visión>           Proyecto nuevo desde cero: visión → stack → scaffolding → MVP slice
-  /team-feature <descripción>     Pipeline completo: discovery → plan → design → impl → review → ship
-  /team-review [archivos]         Pre-merge: code-reviewer + security-engineer + qa-engineer (paralelo)
-  /team-refactor <target>         Refactor seguro con red de tests
-  /team-threat-model <feature>    STRIDE threat modeling
-  /team-ship <servicio>           Production readiness check
-  /team-ux-audit <target>         Audit UI/UX — ux-researcher + interaction + visual + a11y + content
+
+  Pipeline / planning (ceremonia: discovery → plan → design → impl → review):
+    /team-create <visión>           Proyecto nuevo desde cero
+    /team-feature <descripción>     Feature completa con todo el equipo
+    /team-review [archivos]         Pre-merge: reviewer + security + qa en paralelo
+    /team-refactor <target>         Refactor seguro con red de tests
+    /team-threat-model <feature>    STRIDE threat modeling
+    /team-ship <servicio>           Production readiness check
+    /team-ux-audit <target>         Audit UI/UX (5 designers en paralelo)
+
+  Delivery / hands-dirty (sin ceremonia, "venga vamos"):
+    /team-fix <error>               Bug fix pragmático — debug-engineer
+    /team-finish <feature>          Half-built → demo-ready en una sesión
+    /team-seed <entity>             Seed data realista para destrabar testing
 
 EJEMPLOS
   npx github:devwspito/team-software install                       # equipo global (~/.claude/)
@@ -253,6 +260,9 @@ function cmdList() {
     'team-threat-model': 'STRIDE threat modeling de una feature',
     'team-ship': 'Production readiness check antes de deploy',
     'team-ux-audit': 'Audit UI/UX — diagnostica, prescribe arreglos, implementa',
+    'team-fix': 'Bug fix pragmático — debug-engineer (sin pipeline)',
+    'team-finish': 'Half-built → demo-ready — integration + polish + debug',
+    'team-seed': 'Seed data realista para destrabar testing',
   };
   for (const c of COMMAND_NAMES) {
     console.log(`  /${c.padEnd(22)} ${cmdDesc[c] || ''}`);

@@ -2,15 +2,17 @@
 
 Equipo de ingeniería de software de élite para [Claude Code](https://docs.claude.com/en/docs/agents/claude-code/overview). Instalable en un comando.
 
-**16 agentes especializados (incl. sub-team UI/UX) · 7 slash commands interactivos · CLAUDE.md global de principios · memoria persistente.**
+**20 agentes especializados (core + UI/UX + Delivery) · 10 slash commands · CLAUDE.md global de principios · memoria persistente.**
 
 > **No negociables:** Security first · SOLID · DDD · SRP · Clean Code · Modularidad · Orquestación.
 
-**v0.6.0:** `update` resistente — instala fresh si no hay nada previo, avisa cuando tu npx tiene cache stale (comparando contra GitHub).
+**v0.7.0:** Sub-team **Delivery** (manos sucias) — debug-engineer, integration-engineer, polish-engineer, seed-data-engineer + `/team-fix`, `/team-finish`, `/team-seed` para modo "venga vamos" sin pipeline.
 
-**v0.5.0:** Sub-team UI/UX completo (ux-researcher · interaction-designer · visual-designer · accessibility-specialist · content-designer) + `/team-ux-audit` para debug interactivo de demos.
+**v0.6.0:** `update` resistente — instala fresh si no hay nada previo, avisa cuando tu npx tiene cache stale.
 
-**v0.4.0:** Autonomía documentada por agente · TodoWrite disciplinado por pipeline · memoria de proyecto en `.claude/memory/`.
+**v0.5.0:** Sub-team UI/UX completo + `/team-ux-audit` para debug interactivo de demos.
+
+**v0.4.0:** Autonomía por agente · TodoWrite disciplinado · memoria de proyecto en `.claude/memory/`.
 
 ---
 
@@ -52,7 +54,16 @@ Si tu Claude Code soporta plugins (>=2.0), también podés instalarlo como plugi
 
 ---
 
-## El equipo (16 agentes)
+## Dos modos de operación
+
+| Modo | Cuándo | Slash commands |
+|---|---|---|
+| **Pipeline** (ceremonia: discovery → plan → design → impl → review) | Greenfield, features nuevas, decisiones grandes | `/team-create`, `/team-feature`, `/team-refactor`, `/team-threat-model`, `/team-review`, `/team-ship`, `/team-ux-audit` |
+| **Delivery / hands-dirty** (sin pipeline, "venga vamos") | App rota, features a medias, datos faltantes, debug | `/team-fix`, `/team-finish`, `/team-seed` |
+
+Si tu app está a medias y necesitas sacar cosas adelante ya, usa **Delivery**. Si arrancas algo nuevo o tomas decisiones grandes, usa **Pipeline**.
+
+## El equipo (20 agentes)
 
 | Agente | Propósito |
 |---|---|
@@ -73,6 +84,11 @@ Si tu Claude Code soporta plugins (>=2.0), también podés instalarlo como plugi
 | **visual-designer** | Hierarchy, typography, color contrast (WCAG), spacing, consistency, gestalt. |
 | **accessibility-specialist** | WCAG deep audit: screen reader, keyboard, focus management, motion, ARIA correctness. |
 | **content-designer** | Microcopy, error messages, button labels, empty states, voice & tone, i18n-friendly. |
+| **Delivery sub-team (hands-dirty)** | |
+| **debug-engineer** | Bug hunter pragmático. Reproduce → root cause → fix → regression test. No discovery phase. Una pregunta máximo. |
+| **integration-engineer** | Conecta piezas desconectadas: button → handler → API → DB → state → UI feedback. Camina los 7 links de la cadena. |
+| **polish-engineer** | Half-built → demo-ready. Estados faltantes (loading/empty/error), microcopy, edge cases. Bar = demo, no perfect. |
+| **seed-data-engineer** | Seed data realista (NIF español válido, IBAN, IVA, IRPF). Idempotente, prod-safe, reemplaza mocks. |
 
 Ver detalle:
 ```bash
@@ -92,6 +108,9 @@ npx github:devwspito/team-software list
 | `/team-threat-model <feature>` | STRIDE threat modeling con `security-engineer`. Controles concretos y testeables. |
 | `/team-ship <servicio>` | Production readiness check con `devops-engineer` + `security-engineer` antes de deploy. |
 | `/team-ux-audit <target>` | Audit UI/UX sobre algo que "no tiene sentido". Orquesta los 5 agentes del sub-team UX en paralelo, consolida findings, ofrece implementación con frontend-engineer. |
+| `/team-fix <error>` | **Bug fix pragmático.** Pegas el error/síntoma/screenshot, `debug-engineer` reproduce + arregla + añade regression test. Sin pipeline, una pregunta máximo si no puede reproducir. |
+| `/team-finish <feature>` | **"Esta feature está a medias, sácala adelante."** Inventario de gaps → invocación paralela de `integration-engineer` (cablear) + `debug-engineer` (bugs) + `polish-engineer` (estados). Bar = demo-ready. |
+| `/team-seed <entity>` | **Datos realistas para destrabar testing.** `seed-data-engineer` genera fixtures coherentes (facturas españolas con NIF/IVA/IBAN reales) idempotentes y prod-safe. Reemplaza mocks. |
 
 ---
 

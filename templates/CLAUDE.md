@@ -41,6 +41,11 @@ Every project ships with a global agent team. Invoke them via the Agent tool whe
 | `visual-designer` | Visual hierarchy, typography, color contrast, spacing, consistency. |
 | `accessibility-specialist` | Deep WCAG audit beyond `frontend-engineer` smoke check — screen reader, keyboard, focus management, motion. |
 | `content-designer` | Microcopy, error messages, labels, empty states, voice & tone, i18n-friendly content. |
+| **Delivery sub-team** (hands-dirty, sin pipeline) | |
+| `debug-engineer` | Pragmatic bug hunter. Reproduce, isolate, fix, regression test. No discovery phase. |
+| `integration-engineer` | Wire up half-built features — button → handler → API → DB → state → UI feedback. |
+| `polish-engineer` | Half-built → demo-ready: missing states, error messages, edge cases, microcopy smoke. |
+| `seed-data-engineer` | Realistic seed data that passes validation (NIF, IBAN, IVA, etc). Idempotent, prod-safe. |
 
 ## Standard workflow for non-trivial tasks
 
