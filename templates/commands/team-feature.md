@@ -1,46 +1,125 @@
 ---
 name: team-feature
-description: Inicia el workflow completo del equipo para una feature nueva — requirements-analyst → tech-lead → diseño → implementación.
+description: Pipeline interactivo para añadir una feature a un proyecto existente. Pregunta primero qué feature, luego orquesta el equipo.
 ---
 
-# /team-feature — Feature pipeline
+# /team-feature — Feature interactiva
 
-El usuario quiere comenzar una feature nueva. Ejecuta el workflow estándar del equipo en secuencia, sin saltarte fases.
+El usuario invocó `/team-feature`. **NO leas código todavía. NO invoques agentes.** Empieza preguntando qué feature quiere añadir.
 
-## Argumentos
-$ARGUMENTS
+## Paso 1 — Saludo + primera tanda (PRIMER mensaje)
 
-## Pasos
-
-1. **Discovery (BLOQUEANTE)** — Invoca `requirements-analyst` con la descripción de la feature en `$ARGUMENTS`. Espera el dossier completo (goal, scope, AC, constraints, edge cases, ubiquitous language, open questions).
-   - Si hay open questions críticas SIN respuesta, pásalas al usuario y NO avances a la siguiente fase hasta resolverlas.
-
-2. **Planificación** — Una vez el dossier esté completo y aprobado, invoca `tech-lead` pasándole el dossier. Espera el blueprint (work breakdown con especialista por tarea, dependencias, secuencia, definition of done).
-
-3. **Diseño** — Por cada tarea del blueprint que requiera diseño, invoca `software-architect`. Si hay datos, invoca también `database-engineer` en paralelo. Si toca superficie sensible (auth/input/secretos/PII/cripto), invoca `security-engineer` en modo threat-modeling.
-
-4. **Implementación** — Para cada tarea de implementación, invoca `backend-engineer` o `frontend-engineer` según corresponda. Las tareas sin dependencias se delegan en paralelo.
-
-5. **Verificación** — Antes de declarar "done":
-   - `qa-engineer` revisa coverage por comportamiento.
-   - `code-reviewer` hace review pre-merge.
-   - `security-engineer` revisa si se tocó superficie sensible.
-   - **Bloqueante:** no marques como completo si hay findings BLOCK.
-
-6. **Operacional** — Si la feature va a producción, invoca `devops-engineer` para readiness (CI/CD, observability, deploy strategy).
-
-## Reglas
-
-- No saltes fases. Si el usuario quiere acelerar, ofrece comprimir, no eliminar.
-- No diseñes contra un requisito vago — para el dossier primero.
-- No implementes contra un diseño ambiguo — escala al architect.
-- Reporta progreso al usuario al cerrar cada fase con un resumen 1-2 líneas.
-
-## Output al usuario por fase
+Si `$ARGUMENTS` está vacío, envía exactamente:
 
 ```
-[FASE X/6] <nombre> — <especialista invocado>
-  Entrada: <qué le pasaste>
-  Salida:  <resumen del entregable>
-  Próximo: <siguiente fase o GAP a resolver>
+✨ **Feature nueva** — voy a orquestar al equipo: requirements → plan → design → impl → review → ship.
+
+Para empezar, necesito 3 cosas:
+
+  **1. ¿Qué feature quieres añadir?**
+       (1-2 frases — no hace falta especificación completa, ya la sacaremos)
+
+  **2. ¿En qué proyecto o módulo?**
+       (path, nombre del repo, "este proyecto si solo hay uno")
+
+  **3. ¿Hay restricciones obvias desde ya?**
+       (deadline, deps que no se pueden tocar, compatibilidad, "ninguna que sepa")
 ```
+
+**Espera respuestas. No hagas nada más.**
+
+## Paso 2 — Confirma alcance antes de invocar al equipo
+
+Una vez tengas las 3 respuestas:
+
+1. Si el "dónde" es el proyecto actual, ejecuta `git status` + `pwd` y muéstrale qué proyecto entiendes.
+2. Resume tu interpretación en 3 líneas:
+
+```
+Entendido. Voy a trabajar sobre:
+
+  • Proyecto:     <path>
+  • Feature:      <descripción del usuario>
+  • Restricciones: <lo que dijo o "ninguna por ahora">
+
+¿Lo he entendido bien? (sí / corrige X)
+```
+
+**Espera confirmación. No avances con malentendidos.**
+
+## Paso 3 — Discovery con `requirements-analyst` (BLOQUEANTE)
+
+Invoca `requirements-analyst` pasándole la feature + contexto del proyecto. Le pides el dossier completo (goal, scope, AC, constraints, edge cases, ubiquitous language, open questions).
+
+**Importante:** `requirements-analyst` hará preguntas adicionales al usuario. Deja que las haga — no las inventes tú.
+
+Cuando vuelva con open questions críticas, pásalas al usuario textualmente y NO avances hasta que las responda.
+
+## Paso 4 — Planificación con `tech-lead`
+
+Cuando el dossier esté completo, invoca `tech-lead` con el dossier. Espera el blueprint.
+
+Antes de ejecutar el blueprint, **muéstraselo al usuario** en formato compacto:
+
+```
+📋 **Plan**
+
+Tareas (en orden):
+  1. [software-architect] Diseñar módulo X — bloqueante
+  2. [database-engineer] Migración Y (paralelo con 1)
+  3. [security-engineer] Threat model auth
+  4. [backend-engineer] Implementar endpoint Z (depende de 1, 2, 3)
+  5. [frontend-engineer] UI W (depende de 4)
+  6. [qa-engineer] Coverage verification
+  7. [code-reviewer] Pre-merge review
+
+Estimación de duración: <tech-lead's estimate>
+
+¿Sigo o ajustamos algo? (sigue / ajusta X)
+```
+
+## Paso 5 — Ejecución
+
+Tras "sigue" del usuario, delega tareas siguiendo el blueprint:
+- Tareas sin dependencias entre sí → invoca en paralelo (varias Agent calls en el mismo turno)
+- Tareas con dependencias → secuencial
+
+**Reporta progreso al cerrar cada fase** con 2-3 líneas:
+
+```
+✓ [Fase 3/7] Threat model completo — security-engineer identificó 2 controls (rate limit, JWT exp validation). Siguiente: backend-engineer implementa el endpoint.
+```
+
+## Paso 6 — Verificación + review
+
+Antes de declarar la feature "completa":
+- `qa-engineer` confirma coverage por comportamiento
+- `code-reviewer` + `security-engineer` review final en paralelo
+- Si hay BLOCK: páralo, pasa los findings al usuario, espera fix
+
+## Paso 7 — Entrega
+
+```
+🎉 **Feature completada**: <descripción>
+
+  • Archivos modificados:  <N>
+  • Tests añadidos:        <N>
+  • Cobertura del flujo:   <%>
+  • Verdict revisores:     APPROVE / APPROVE WITH NITS
+
+Siguiente paso recomendado:
+  • Commit: `git add . && git commit -m "<sugerencia>"`
+  • Ship: `/team-ship <servicio>` cuando estés listo para deploy.
+```
+
+## Si $ARGUMENTS llega no vacío
+
+Trata el contenido como respuesta a la pregunta 1 del Paso 1 ("qué feature"). Continúa con las preguntas 2 y 3.
+
+## Reglas duras
+
+- **NUNCA empieces a leer código sin haber confirmado proyecto + feature + restricciones.**
+- **NUNCA ejecutes el blueprint sin mostrárselo al usuario en el Paso 4.**
+- **Una tanda de preguntas a la vez.** No agobies.
+- **No saltes fases.** Si el usuario quiere acelerar, ofrece comprimir, no eliminar.
+- **No implementes contra un dossier incompleto.**

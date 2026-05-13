@@ -1,141 +1,179 @@
 ---
 name: team-create
-description: Crea un proyecto nuevo desde cero — visión → stack → estructura inicial → MVP slice. Orquesta requirements-analyst, software-architect, database-engineer, security-engineer, devops-engineer, tech-lead, y luego backend/frontend para el primer slice viable.
+description: Crea un proyecto nuevo desde cero — visión → stack → estructura inicial → MVP slice. Interactivo: pregunta primero, no asume nada.
 ---
 
-# /team-create — Proyecto nuevo desde cero
+# /team-create — Proyecto nuevo desde cero (interactivo)
 
-El usuario quiere crear un proyecto **nuevo**, no añadir a uno existente. No hay codebase para leer. Las decisiones son más amplias: lenguaje, framework, storage, infra, deploy target, presupuesto, deadline.
+El usuario invocó `/team-create`. **NO escribas archivos, no leas filesystem, no invoques agentes todavía.** Hay un proyecto vacío por crear y necesitas entender qué.
 
-## Argumentos
-$ARGUMENTS (descripción del proyecto / problema a resolver / visión)
+## Paso 1 — Saludo + primera tanda de preguntas (PRIMER mensaje)
 
-## Pasos
-
-### 1. Discovery profundo — `requirements-analyst` (BLOQUEANTE)
-
-Invócalo con `$ARGUMENTS` y pídele que extraiga **además del intake estándar**:
-
-- **Visión y propuesta de valor:** una frase. ¿Por qué este producto existe?
-- **Usuarios objetivo (personas):** quiénes son, contexto, qué intentan hacer.
-- **Casos de uso primarios** (priorizados): ¿cuáles son los 3-5 flows core?
-- **NFRs reales:** ¿hosted o on-prem? ¿offline-first? ¿real-time? ¿multi-tenant? ¿volumen esperado?
-- **Restricciones de stack:** ¿preferencia o requerimiento de lenguaje/framework/hosting? ¿el usuario tiene experiencia previa con algo?
-- **Presupuesto operacional:** ¿servicio gratuito? ¿coste por usuario aceptable?
-- **Deadline / timeline:** ¿cuándo necesitan v1, v2?
-- **Cumplimiento desde día cero:** ¿GDPR, HIPAA, PCI, SOC2, sector regulado?
-- **Datos:** ¿qué se almacena? ¿PII? ¿retención? ¿right-to-delete?
-
-Si quedan **open questions críticas**, páralo, pásalas al usuario y NO avances hasta resolverlas. No diseñes un stack contra una visión vaga.
-
-### 2. Stack + arquitectura — `software-architect`
-
-Pasa el dossier completo. Pídele:
-
-- **Recomendación de stack** justificada por los NFRs:
-  - Lenguaje + framework backend (con 2-3 alternativas y trade-offs)
-  - Frontend (si aplica): SPA / SSR / SSG / mobile
-  - Storage primario (coordina con `database-engineer`)
-  - Infra / hosting recomendado (coordina con `devops-engineer`)
-- **Estructura de carpetas** del repo (DDD layering: domain / application / infrastructure / presentation)
-- **Bounded contexts** iniciales identificados desde los casos de uso
-- **Contratos de los módulos** principales (interfaces / ports)
-
-### 3. Decisión de datos — `database-engineer`
-
-En **paralelo** con el architect (mismo turno, dos Agent calls):
-
-- Elige store primario (relacional vs document vs KV vs híbrido) justificado por access patterns
-- Esquema inicial de las entidades core (con PK, FKs, índices base)
-- Estrategia de migraciones desde día uno
-
-### 4. Threat model de día cero — `security-engineer`
-
-En paralelo con los anteriores. Pídele:
-
-- Trust boundaries iniciales (qué es público, qué requiere auth, qué requiere admin)
-- Modelo de autenticación recomendado (email+password / OAuth / passwordless / magic link)
-- Modelo de autorización (RBAC / ABAC / per-resource)
-- Datos sensibles y dónde se almacenan / encriptan
-- Audit log desde el comienzo si la app lo requiere
-
-### 5. Infra mínima — `devops-engineer`
-
-En paralelo. Pídele:
-
-- Hosting target (Vercel / Fly / Render / AWS / GCP / Cloudflare / self-hosted)
-- CI desde **commit 1** (lint, typecheck, test, build, security scan)
-- Containerización si el stack lo justifica
-- Observabilidad mínima viable (structured logs + un dashboard)
-- Estrategia de secrets desde día uno (env, secret manager)
-- Deploy strategy (preview branches, canary, blue/green)
-
-### 6. Plan del MVP slice — `tech-lead`
-
-Con las 4 entradas anteriores, pídele:
-
-- Identifica el **slice mínimo viable** (la cosa más pequeña que entrega valor end-to-end al usuario)
-- Descompón ese slice en tareas atómicas con especialista asignado
-- Identifica el orden / paralelismo
-- Define **definition of done para el MVP**
-
-### 7. Confirmación al usuario antes de generar
-
-Presenta el plan al usuario en un solo mensaje:
+Envía exactamente:
 
 ```
-## Proyecto: <nombre propuesto>
-## Stack elegido: <lenguaje + framework + storage + hosting>
-## Bounded contexts: <lista>
-## MVP slice (lo que voy a generar): <lista>
-## Decisiones aplazadas: <lista>
+🚀 **Proyecto nuevo** — voy a orquestar al equipo para crearlo correctamente desde el primer commit.
 
-¿Procedo a crear la estructura inicial del repo + el código del MVP slice?
+Para no perder el tiempo, necesito 3 cosas para empezar. Responde en cualquier formato:
+
+  **1. ¿Qué problema resuelve el producto, en una frase?**
+       Ej: "Un SaaS para que equipos pequeños hagan retros sin Miro"
+
+  **2. ¿Quiénes son los usuarios?**
+       Ej: "Tech leads de equipos de 3-10 personas, agile"
+
+  **3. ¿Tienes preferencia de stack o estamos abiertos?**
+       Ej: "TypeScript todo si se puede" / "Node backend, Next frontend" / "abierto, recomiéndame"
 ```
 
-**NO escribas código aún.** Espera confirmación explícita del usuario.
+**Espera respuesta. NO continúes hasta tener las 3.**
 
-### 8. Scaffolding inicial (post-aprobación)
+## Paso 2 — Segunda tanda (NFRs y constraints)
 
-Una vez aprobado:
-
-1. **Crea la estructura de carpetas** del repo según el diseño del architect.
-2. **Inicializa el proyecto**: `package.json` / `pyproject.toml` / `Cargo.toml` / lo que aplique, con deps mínimas justificadas.
-3. **Setea CI desde commit 1**: archivo de pipeline (.github/workflows/, etc.) con lint/typecheck/test obligatorios.
-4. **`.gitignore` y `README.md`** con el stack documentado y comandos para arrancar.
-5. **`.env.example`** con todas las variables, ningún secreto real.
-6. **Migraciones iniciales** según `database-engineer`.
-7. **Health endpoint** + structured logging desde el primer commit.
-8. **Auth scaffolding** según `security-engineer` (no implementación de OAuth, solo el shape).
-
-### 9. Implementación del MVP slice
-
-Delega tareas según el blueprint de `tech-lead`:
-- `backend-engineer` para use cases + domain + infra adapters
-- `frontend-engineer` para UI del flow primario
-- `qa-engineer` para tests críticos del slice
-
-### 10. Verificación final
-
-Antes de declarar "done":
-- `code-reviewer` review completo (es el primer código del repo — el listón es alto, sienta las bases)
-- `security-engineer` review focalizado en el shape de auth/datos sensibles
-- `devops-engineer` verifica que el CI corra verde
-
-## Reglas
-
-- **No saltes el dossier.** Crear un proyecto sin entender el problema produce stacks que se tiran a los 2 meses.
-- **No elijas stack por moda.** Justifica cada elección contra los NFRs del dossier.
-- **El primer commit importa.** No metas hello-world placeholder — mete el slice viable mínimo.
-- **CI desde commit 1.** Si la pipeline no es verde al primer commit, el proyecto ya nace con deuda.
-- **No prometas features para "después".** Lo que está fuera del MVP slice se documenta como follow-up explícito.
-- **Pregunta antes de escribir código.** Tras la fase 6, espera confirmación.
-
-## Output por fase al usuario
+Una vez tengas problema + usuarios + stack-pref:
 
 ```
-[FASE X/10] <nombre> — <especialistas invocados (en paralelo si aplica)>
-  Entrega: <resumen 1-2 líneas del output>
-  Decisiones clave: <bullets>
-  Próximo: <fase siguiente o GAP>
+Vale, entendido. 4 preguntas más para afinar el stack y la infra:
+
+  **4. ¿Dónde se va a hostear?**
+       (a) cloud público (Vercel/Render/Fly/Cloudflare/AWS — yo elijo según el stack)
+       (b) self-hosted / on-prem
+       (c) prefiero <X>
+
+  **5. ¿Multi-tenant, single-tenant, o uso personal?**
+
+  **6. ¿Hay compliance que respetar desde día uno?**
+       (GDPR / HIPAA / PCI / SOC2 / sector regulado / ninguno)
+
+  **7. ¿Deadline aproximado para v1?**
+       (semana / mes / "cuando esté")
 ```
+
+**Espera respuesta. NO asumas defaults si el usuario no responde.**
+
+## Paso 3 — Tercera tanda solo si hay ambigüedad clave
+
+Si tras las 7 preguntas hay aún algo crítico sin resolver, pregúntalo en **una sola tanda más** (máx 3 preguntas):
+
+- ¿Hay datos sensibles / PII?
+- ¿Necesita real-time? offline-first? mobile-first?
+- ¿Presupuesto operacional? (gratis hasta X usuarios / sin límite)
+
+**Nunca pases de 3 tandas de preguntas.** Si después de eso aún hay huecos, los listas como "asunciones que voy a hacer" en el plan.
+
+## Paso 4 — Discovery profundo con `requirements-analyst`
+
+Con todas las respuestas, invoca `requirements-analyst` pasándole **el resumen estructurado** de lo respondido. Pídele que produzca:
+
+- Casos de uso primarios priorizados
+- NFRs concretos (latencia, escalabilidad, disponibilidad, seguridad)
+- Modelo de dominio inicial (entidades, value objects)
+- Ubiquitous language
+- Open questions remanentes
+
+## Paso 5 — Stack + arquitectura + datos + seguridad + infra (paralelo)
+
+**Un solo turno, 4 Agent calls paralelas:**
+
+- `software-architect` — propone stack justificado + estructura de carpetas + bounded contexts + contratos
+- `database-engineer` — store primario + esquema inicial + estrategia de migraciones
+- `security-engineer` — threat model día cero + modelo auth + datos sensibles + audit
+- `devops-engineer` — hosting + CI desde commit 1 + observabilidad mínima + secrets strategy
+
+## Paso 6 — MVP slice con `tech-lead`
+
+Con todo lo anterior, `tech-lead` produce:
+
+- El slice mínimo viable (la cosa más pequeña que entrega valor end-to-end)
+- Work breakdown con especialista asignado
+- Orden / paralelismo
+- Definition of done del MVP
+
+## Paso 7 — **Confirmación BLOQUEANTE** antes de escribir nada
+
+Presenta TODO en un solo mensaje al usuario:
+
+```
+## Propuesta de proyecto
+
+**Nombre sugerido:** <kebab-case>
+**Stack:** <lenguaje + framework + storage + hosting>
+**Estructura:** <bounded contexts identificados>
+
+### MVP slice — esto es lo que voy a generar:
+  • Estructura del repo con DDD layering
+  • package.json/pyproject/etc con deps justificadas
+  • CI desde commit 1 (.github/workflows/...)
+  • .gitignore + .env.example (sin secretos reales)
+  • README con el stack y cómo arrancar
+  • Migraciones iniciales del esquema
+  • Health endpoint + structured logging
+  • Auth scaffolding (shape, no implementación)
+  • Implementación del flow primario: <descripción>
+
+### Decisiones que estoy haciendo (cámbiame si quieres):
+  • <decisión 1> — razón
+  • <decisión 2> — razón
+
+### Aplazado a follow-ups (NO va al MVP):
+  • <feature 1>
+  • <feature 2>
+
+### Asunciones:
+  • <asunción 1>
+  • <asunción 2>
+
+¿Procedo a crear el proyecto? (sí / cámbiame X / cancela)
+```
+
+**No escribas un solo archivo hasta tener "sí" o equivalente.**
+
+## Paso 8 — Scaffolding (post-aprobación)
+
+Crea:
+
+1. Estructura de carpetas según el architect
+2. Manifiestos (package.json / pyproject.toml / Cargo.toml / etc) con deps mínimas
+3. CI pipeline (.github/workflows/ci.yml o equivalente) verde desde commit 1
+4. .gitignore, .env.example, README.md con instrucciones de arranque
+5. Migraciones iniciales (database-engineer)
+6. Health endpoint + structured logging (devops-engineer)
+7. Auth scaffolding (shape) según security-engineer
+
+Después delega:
+- `backend-engineer` → use cases + domain + adapters
+- `frontend-engineer` → UI del flow primario (si aplica)
+- `qa-engineer` → tests críticos del slice
+
+## Paso 9 — Review final
+
+Antes de declarar "proyecto creado":
+- `code-reviewer` review completo (el listón es alto — es el primer commit)
+- `security-engineer` review del shape auth + datos sensibles
+- `devops-engineer` verifica CI verde
+
+## Paso 10 — Entrega
+
+Resumen final:
+
+```
+✅ Proyecto creado en <path>
+
+  • <N> archivos generados
+  • CI status: <verde/pending>
+  • Próximo paso recomendado: <qué hacer>
+  • Comandos: `cd <dir> && <run command>`
+```
+
+## Si $ARGUMENTS llega no vacío
+
+Trata el contenido como respuesta a la pregunta 1 del Paso 1 ("qué problema resuelve"). Después haz las preguntas restantes del Paso 1 y continúa.
+
+## Reglas duras
+
+- **NUNCA crees archivos sin la aprobación del Paso 7.** El usuario debe ver el plan completo antes.
+- **NUNCA elijas stack por moda.** Cada elección se justifica contra los NFRs.
+- **NO prometas features para "después" sin marcarlas como follow-ups explícitos.**
+- **CI desde commit 1.** Si el pipeline no es verde al primer push, el proyecto ya nace con deuda.
+- **Una tanda de preguntas a la vez.** No agobies al usuario con 12 preguntas al mismo tiempo.
+- **Máximo 3 tandas de preguntas.** Si necesitas más, anota como asunciones y avanza.
