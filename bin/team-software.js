@@ -39,7 +39,7 @@ Equipo de ingeniería de software de élite (${AGENT_NAMES.length} agentes + ${C
 Principios: Security first · SOLID · DDD · SRP · Clean Code · Modularidad · Orquestación.
 
 USO
-  npx team-software <comando> [opciones]
+  npx github:devwspito/team-software <comando> [opciones]
 
 COMANDOS
   install                   Instala equipo + slash commands + CLAUDE.md global.
@@ -69,12 +69,12 @@ SLASH COMMANDS (después de install, dentro de Claude Code)
   /team-ship <servicio>           Production readiness check
 
 EJEMPLOS
-  npx team-software install                       # equipo global (~/.claude/)
-  npx team-software install --scope project       # solo este proyecto (./.claude/)
-  npx team-software install --force               # sobrescribe
-  npx team-software status
-  npx team-software list
-  npx team-software uninstall --scope project --yes
+  npx github:devwspito/team-software install                       # equipo global (~/.claude/)
+  npx github:devwspito/team-software install --scope project       # solo este proyecto (./.claude/)
+  npx github:devwspito/team-software install --force               # sobrescribe
+  npx github:devwspito/team-software status
+  npx github:devwspito/team-software list
+  npx github:devwspito/team-software uninstall --scope project --yes
 
 DOCUMENTACIÓN
   https://github.com/devwspito/team-software
@@ -147,7 +147,7 @@ function cmdStatus(args) {
   const missing = s.agentsMissing.length + s.commandsMissing.length;
   if (missing > 0) {
     console.log('');
-    console.log(`  → corre: npx team-software install --scope ${scope.name}`);
+    console.log(`  → corre: npx github:devwspito/team-software install --scope ${scope.name}`);
   }
   process.exit(missing === 0 ? 0 : 1);
 }
