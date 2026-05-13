@@ -12,11 +12,13 @@ Equipo de ingeniería de software de élite para [Claude Code](https://docs.clau
 
 ```bash
 # Equipo global (disponible en todos tus proyectos)
-npx team-software install
+npx github:devwspito/team-software install
 
 # Luego en Claude Code:
 /team-feature "Quiero añadir login con magic link"
 ```
+
+> Una vez publicado en npm: `npx team-software install` (sin prefijo `github:`).
 
 Eso es todo. El equipo orquesta automáticamente:
 `requirements-analyst` extrae el contrato → `tech-lead` planifica → `software-architect` diseña → `security-engineer` threat-modela → `backend-engineer` / `frontend-engineer` implementan → `qa-engineer` valida → `code-reviewer` revisa → `devops-engineer` despliega.
@@ -25,15 +27,23 @@ Eso es todo. El equipo orquesta automáticamente:
 
 ## Instalación
 
-### Opción A: npx (recomendado)
+### Opción A: npx desde GitHub (disponible hoy)
 
 ```bash
-npx team-software install                  # scope=user (global, ~/.claude/)
-npx team-software install --scope project  # solo este proyecto (./.claude/)
-npx team-software install --force          # sobrescribe lo existente
+npx github:devwspito/team-software install                  # scope=user (global, ~/.claude/)
+npx github:devwspito/team-software install --scope project  # solo este proyecto (./.claude/)
+npx github:devwspito/team-software install --force          # sobrescribe lo existente
 ```
 
-### Opción B: Plugin nativo de Claude Code
+### Opción B: npx desde npm registry (próximamente)
+
+```bash
+npx team-software install
+```
+
+Pendiente de publicar a npm. Las dos formas instalan exactamente lo mismo — la única diferencia es la latencia (npm registry es más rápido que clonar el repo).
+
+### Opción C: Plugin nativo de Claude Code
 
 Si tu Claude Code soporta plugins (>=2.0), también podés instalarlo como plugin clonando el repo y apuntando `.claude-plugin/plugin.json` desde tu plugin config.
 
@@ -57,7 +67,7 @@ Si tu Claude Code soporta plugins (>=2.0), también podés instalarlo como plugi
 
 Ver detalle:
 ```bash
-npx team-software list
+npx github:devwspito/team-software list
 ```
 
 ---
@@ -92,6 +102,8 @@ Para tareas triviales (typo, una línea), salta el equipo — los principios se 
 ---
 
 ## Comandos CLI
+
+> Mientras el paquete no esté en npm, sustituye `team-software` por `github:devwspito/team-software` en cada comando.
 
 ```bash
 npx team-software install [--scope user|project] [--force] [--no-claude-md]
