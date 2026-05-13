@@ -35,6 +35,12 @@ Every project ships with a global agent team. Invoke them via the Agent tool whe
 | `devops-engineer` | CI/CD, containerization, infra-as-code, observability, deployments. |
 | `code-reviewer` | Before any commit/PR. Enforces SOLID, clean code, security, modularity. |
 | `refactoring-specialist` | Code smell hunt, complexity reduction, modularity improvements without behavior change. |
+| **UI/UX sub-team** | |
+| `ux-researcher` | Diagnose UX problems on existing interfaces — heuristic evaluation (Nielsen), journey mapping. Invoke when something in the UI doesn't make sense. |
+| `interaction-designer` | Prescribe behavior — flows, states (loading/empty/error/success), affordances, recovery paths. |
+| `visual-designer` | Visual hierarchy, typography, color contrast, spacing, consistency. |
+| `accessibility-specialist` | Deep WCAG audit beyond `frontend-engineer` smoke check — screen reader, keyboard, focus management, motion. |
+| `content-designer` | Microcopy, error messages, labels, empty states, voice & tone, i18n-friendly content. |
 
 ## Standard workflow for non-trivial tasks
 

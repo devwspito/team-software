@@ -2,11 +2,13 @@
 
 Equipo de ingeniería de software de élite para [Claude Code](https://docs.claude.com/en/docs/agents/claude-code/overview). Instalable en un comando.
 
-**11 agentes especializados · 6 slash commands interactivos · CLAUDE.md global de principios · memoria persistente.**
+**16 agentes especializados (incl. sub-team UI/UX) · 7 slash commands interactivos · CLAUDE.md global de principios · memoria persistente.**
 
 > **No negociables:** Security first · SOLID · DDD · SRP · Clean Code · Modularidad · Orquestación.
 
-**v0.4.0:** Autonomía documentada por agente · TodoWrite disciplinado por pipeline · memoria de proyecto en `.claude/memory/` para handoff entre agentes y continuidad entre sesiones.
+**v0.5.0:** Sub-team UI/UX completo (ux-researcher · interaction-designer · visual-designer · accessibility-specialist · content-designer) + `/team-ux-audit` para debug interactivo de demos.
+
+**v0.4.0:** Autonomía documentada por agente · TodoWrite disciplinado por pipeline · memoria de proyecto en `.claude/memory/`.
 
 ---
 
@@ -48,7 +50,7 @@ Si tu Claude Code soporta plugins (>=2.0), también podés instalarlo como plugi
 
 ---
 
-## El equipo (11 agentes)
+## El equipo (16 agentes)
 
 | Agente | Propósito |
 |---|---|
@@ -63,6 +65,12 @@ Si tu Claude Code soporta plugins (>=2.0), también podés instalarlo como plugi
 | **devops-engineer** | CI/CD, contenedores, IaC, observabilidad (RED/USE), deploys progresivos. |
 | **code-reviewer** | Review pre-merge enforcing SOLID, clean code, modularidad, smoke security. |
 | **refactoring-specialist** | Refactor a comportamiento preservado bajo red de tests. Catálogo Fowler/Beck. |
+| **UI/UX sub-team** | |
+| **ux-researcher** | Diagnostica UX problems con heurísticas Nielsen + Krug + Norman. Identifica QUÉ está mal y POR QUÉ. |
+| **interaction-designer** | Prescribe flows, estados (loading/empty/error/success), affordances, recovery paths. |
+| **visual-designer** | Hierarchy, typography, color contrast (WCAG), spacing, consistency, gestalt. |
+| **accessibility-specialist** | WCAG deep audit: screen reader, keyboard, focus management, motion, ARIA correctness. |
+| **content-designer** | Microcopy, error messages, button labels, empty states, voice & tone, i18n-friendly. |
 
 Ver detalle:
 ```bash
@@ -81,6 +89,7 @@ npx github:devwspito/team-software list
 | `/team-refactor <target>` | Refactor seguro coordinado con red de tests verificada por `qa-engineer`. Two-phase change (Tidy First). |
 | `/team-threat-model <feature>` | STRIDE threat modeling con `security-engineer`. Controles concretos y testeables. |
 | `/team-ship <servicio>` | Production readiness check con `devops-engineer` + `security-engineer` antes de deploy. |
+| `/team-ux-audit <target>` | Audit UI/UX sobre algo que "no tiene sentido". Orquesta los 5 agentes del sub-team UX en paralelo, consolida findings, ofrece implementación con frontend-engineer. |
 
 ---
 

@@ -77,6 +77,7 @@ SLASH COMMANDS (después de install, dentro de Claude Code)
   /team-refactor <target>         Refactor seguro con red de tests
   /team-threat-model <feature>    STRIDE threat modeling
   /team-ship <servicio>           Production readiness check
+  /team-ux-audit <target>         Audit UI/UX — ux-researcher + interaction + visual + a11y + content
 
 EJEMPLOS
   npx github:devwspito/team-software install                       # equipo global (~/.claude/)
@@ -222,6 +223,7 @@ function cmdList() {
     'team-refactor': 'Refactor seguro coordinado bajo red de tests',
     'team-threat-model': 'STRIDE threat modeling de una feature',
     'team-ship': 'Production readiness check antes de deploy',
+    'team-ux-audit': 'Audit UI/UX — diagnostica, prescribe arreglos, implementa',
   };
   for (const c of COMMAND_NAMES) {
     console.log(`  /${c.padEnd(22)} ${cmdDesc[c] || ''}`);
