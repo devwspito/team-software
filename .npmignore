@@ -1,0 +1,18 @@
+# Dev-only
+.claude/
+.git/
+.github/
+node_modules/
+tests/
+docs/
+examples/
+
+# Editor / OS
+.DS_Store
+*.log
+.env*
+.vscode/
+.idea/
+
+# Keep these (overrides):
+# bin/, lib/, templates/, package.json, README.md, LICENSE

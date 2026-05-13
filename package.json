@@ -1,0 +1,54 @@
+{
+  "name": "team-software",
+  "version": "0.1.0",
+  "description": "Equipo de ingeniería de software de élite (10 agentes) para Claude Code — Security first, SOLID, DDD, SRP, Clean Code, Modularidad, Orquestación. Instalable globalmente con npx en cualquier proyecto.",
+  "keywords": [
+    "claude-code",
+    "claude",
+    "anthropic",
+    "agents",
+    "software-engineering",
+    "ddd",
+    "solid",
+    "clean-code",
+    "security",
+    "code-review",
+    "tech-lead"
+  ],
+  "license": "MIT",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "bin": {
+    "team-software": "./bin/team-software.js"
+  },
+  "main": "./lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./lib/install": "./lib/install.js",
+    "./lib/status": "./lib/status.js",
+    "./lib/uninstall": "./lib/uninstall.js",
+    "./lib/scope": "./lib/scope.js"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "templates/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --check bin/team-software.js && node --check lib/*.js && echo \"syntax ok\""
+  },
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/devwspito/team-software.git"
+  },
+  "bugs": {
+    "url": "https://github.com/devwspito/team-software/issues"
+  },
+  "homepage": "https://github.com/devwspito/team-software#readme",
+  "author": "devwspito"
+}

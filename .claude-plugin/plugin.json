@@ -1,0 +1,31 @@
+{
+  "name": "team-software",
+  "version": "0.1.0",
+  "description": "Equipo de ingeniería de software de élite (11 agentes) para Claude Code — Security first, SOLID, DDD, SRP, Clean Code, Modularidad, Orquestación. Workflow completo: requirements-analyst → tech-lead → architect → security → backend/frontend → qa → code-reviewer → devops.",
+  "author": {
+    "name": "devwspito",
+    "url": "https://github.com/devwspito"
+  },
+  "homepage": "https://github.com/devwspito/team-software",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/devwspito/team-software.git"
+  },
+  "license": "MIT",
+  "keywords": [
+    "software-engineering",
+    "ddd",
+    "solid",
+    "clean-code",
+    "security",
+    "code-review",
+    "agents",
+    "tech-lead",
+    "architecture"
+  ],
+  "engines": {
+    "claudeCode": ">=2.0.0"
+  },
+  "agents": "../templates/agents",
+  "commands": "../templates/commands"
+}
