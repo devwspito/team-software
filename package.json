@@ -1,7 +1,7 @@
 {
   "name": "team-software",
-  "version": "0.7.0",
-  "description": "Equipo de ingeniería de software de élite (20 agentes + 10 slash commands + sub-teams UI/UX + Delivery + memory persistente) para Claude Code — Security first, SOLID, DDD, SRP, Clean Code, Modularidad, Orquestación. Pipeline + hands-dirty modes built-in.",
+  "version": "0.8.0",
+  "description": "Equipo de ingeniería de software de élite (22 agentes + 11 slash commands + 3 sub-teams: UI/UX, Delivery, Inspection + memory persistente) para Claude Code — Security first, SOLID, DDD, SRP, Clean Code, Modularidad, Orquestación. Pipeline + hands-dirty + proactive-discovery modes.",
   "keywords": [
     "claude-code",
     "claude",

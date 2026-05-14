@@ -46,6 +46,9 @@ Every project ships with a global agent team. Invoke them via the Agent tool whe
 | `integration-engineer` | Wire up half-built features — button → handler → API → DB → state → UI feedback. |
 | `polish-engineer` | Half-built → demo-ready: missing states, error messages, edge cases, microcopy smoke. |
 | `seed-data-engineer` | Realistic seed data that passes validation (NIF, IBAN, IVA, etc). Idempotent, prod-safe. |
+| **Inspection sub-team** (proactive bug discovery) | |
+| `bug-hunter` | Finds bugs the user hasn't reported. Static analysis + tooling (tests, lint, typecheck, build) + cross-reference. |
+| `exploratory-tester` | Simulates user journeys via code reading. Catalogs dead-ends, broken transitions, impossible states. |
 
 ## Standard workflow for non-trivial tasks
 

@@ -88,6 +88,7 @@ SLASH COMMANDS (después de install, dentro de Claude Code)
     /team-fix <error>               Bug fix pragmático — debug-engineer
     /team-finish <feature>          Half-built → demo-ready en una sesión
     /team-seed <entity>             Seed data realista para destrabar testing
+    /team-inspect [scope]           Caza bugs proactivamente (bug-hunter + exploratory-tester)
 
 EJEMPLOS
   npx github:devwspito/team-software install                       # equipo global (~/.claude/)
@@ -263,6 +264,7 @@ function cmdList() {
     'team-fix': 'Bug fix pragmático — debug-engineer (sin pipeline)',
     'team-finish': 'Half-built → demo-ready — integration + polish + debug',
     'team-seed': 'Seed data realista para destrabar testing',
+    'team-inspect': 'Caza bugs proactivamente — bug-hunter + exploratory-tester',
   };
   for (const c of COMMAND_NAMES) {
     console.log(`  /${c.padEnd(22)} ${cmdDesc[c] || ''}`);

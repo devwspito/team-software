@@ -2,9 +2,11 @@
 
 Equipo de ingeniería de software de élite para [Claude Code](https://docs.claude.com/en/docs/agents/claude-code/overview). Instalable en un comando.
 
-**20 agentes especializados (core + UI/UX + Delivery) · 10 slash commands · CLAUDE.md global de principios · memoria persistente.**
+**22 agentes especializados (core + UI/UX + Delivery + Inspection) · 11 slash commands · CLAUDE.md global de principios · memoria persistente.**
 
 > **No negociables:** Security first · SOLID · DDD · SRP · Clean Code · Modularidad · Orquestación.
+
+**v0.8.0:** Sub-team **Inspection** (caza bugs proactivamente) — bug-hunter (static + tooling) + exploratory-tester (user-journey simulation) + `/team-inspect` para encontrar bugs sin que tú los señales.
 
 **v0.7.0:** Sub-team **Delivery** (manos sucias) — debug-engineer, integration-engineer, polish-engineer, seed-data-engineer + `/team-fix`, `/team-finish`, `/team-seed` para modo "venga vamos" sin pipeline.
 
@@ -54,16 +56,21 @@ Si tu Claude Code soporta plugins (>=2.0), también podés instalarlo como plugi
 
 ---
 
-## Dos modos de operación
+## Tres modos de operación
 
 | Modo | Cuándo | Slash commands |
 |---|---|---|
 | **Pipeline** (ceremonia: discovery → plan → design → impl → review) | Greenfield, features nuevas, decisiones grandes | `/team-create`, `/team-feature`, `/team-refactor`, `/team-threat-model`, `/team-review`, `/team-ship`, `/team-ux-audit` |
-| **Delivery / hands-dirty** (sin pipeline, "venga vamos") | App rota, features a medias, datos faltantes, debug | `/team-fix`, `/team-finish`, `/team-seed` |
+| **Delivery / hands-dirty** (sin pipeline, "venga vamos") | App rota, features a medias, datos faltantes, debug puntual | `/team-fix`, `/team-finish`, `/team-seed` |
+| **Inspection / proactive** (sin que tú señales nada) | "No sé qué está roto pero algo pasa" | `/team-inspect` |
 
-Si tu app está a medias y necesitas sacar cosas adelante ya, usa **Delivery**. Si arrancas algo nuevo o tomas decisiones grandes, usa **Pipeline**.
+**Flujo típico cuando heredas una app a medias:**
+1. `/team-inspect` → lista de bugs con prioridad
+2. `/team-fix` para cada catastrophic (o aceptar el encadenamiento que ofrece `/team-inspect`)
+3. `/team-finish` para features a medias
+4. `/team-seed` si testing está bloqueado por falta de datos
 
-## El equipo (20 agentes)
+## El equipo (22 agentes)
 
 | Agente | Propósito |
 |---|---|
@@ -89,6 +96,9 @@ Si tu app está a medias y necesitas sacar cosas adelante ya, usa **Delivery**. 
 | **integration-engineer** | Conecta piezas desconectadas: button → handler → API → DB → state → UI feedback. Camina los 7 links de la cadena. |
 | **polish-engineer** | Half-built → demo-ready. Estados faltantes (loading/empty/error), microcopy, edge cases. Bar = demo, no perfect. |
 | **seed-data-engineer** | Seed data realista (NIF español válido, IBAN, IVA, IRPF). Idempotente, prod-safe, reemplaza mocks. |
+| **Inspection sub-team (proactive)** | |
+| **bug-hunter** | Inspecciona codebase + corre tooling (tests, lint, typecheck, build) + cross-reference. Encuentra bugs sin que tú los señales. |
+| **exploratory-tester** | Simula viajes de usuario leyendo código. Cataloga dead-ends, transiciones rotas, estados imposibles. |
 
 Ver detalle:
 ```bash
@@ -111,6 +121,7 @@ npx github:devwspito/team-software list
 | `/team-fix <error>` | **Bug fix pragmático.** Pegas el error/síntoma/screenshot, `debug-engineer` reproduce + arregla + añade regression test. Sin pipeline, una pregunta máximo si no puede reproducir. |
 | `/team-finish <feature>` | **"Esta feature está a medias, sácala adelante."** Inventario de gaps → invocación paralela de `integration-engineer` (cablear) + `debug-engineer` (bugs) + `polish-engineer` (estados). Bar = demo-ready. |
 | `/team-seed <entity>` | **Datos realistas para destrabar testing.** `seed-data-engineer` genera fixtures coherentes (facturas españolas con NIF/IVA/IBAN reales) idempotentes y prod-safe. Reemplaza mocks. |
+| `/team-inspect [scope]` | **Caza bugs sin que tú los señales.** Lanza `bug-hunter` (static + tooling) + `exploratory-tester` (user-journeys) en paralelo. Consolida en lista priorizada. Ofrece encadenar a `/team-fix` para los top N. |
 
 ---
 
