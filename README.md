@@ -284,8 +284,8 @@ team-software/
 │   └── agent-meta.js             # metadata para `list`
 ├── templates/
 │   ├── CLAUDE.md                 # principios + autonomy + memory protocol
-│   ├── agents/                   # 11 prompts especializados (con autonomy rules)
-│   ├── commands/                 # 6 slash commands interactivos (con todo + memory I/O)
+│   ├── agents/                   # 22 prompts especializados (con autonomy rules)
+│   ├── commands/                 # 11 slash commands interactivos (con todo + memory I/O)
 │   └── memory/
 │       ├── INDEX.md              # plantilla inicial
 │       └── PROTOCOL.md           # contrato de uso de memoria
@@ -302,7 +302,7 @@ Diseño inspirado en:
 - [libroforge](https://github.com/devwspito/libroforge) — patrón npx scaffolding + scope user/project
 - [ruflo / claude-flow](https://github.com/ruvnet/ruflo) — plugin manifest + slash commands para orquestación
 
-team-software toma de ambos lo esencial y se queda en flat structure + 5 comandos. Sin MCP, sin neural training, sin swarm consensus. Un equipo de software profesional, no una constelación.
+team-software toma de ambos lo esencial y se queda en flat structure + 11 slash commands. Sin MCP, sin neural training, sin swarm consensus. Un equipo de software profesional, no una constelación.
 
 ---
 

@@ -1,6 +1,6 @@
 {
   "name": "team-software",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Equipo de ingeniería de software de élite (22 agentes + 11 slash commands + 3 sub-teams: UI/UX, Delivery, Inspection + memory persistente) para Claude Code — Security first, SOLID, DDD, SRP, Clean Code, Modularidad, Orquestación. Pipeline + hands-dirty + proactive-discovery modes.",
   "keywords": [
     "claude-code",
@@ -41,7 +41,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "test": "node --check bin/team-software.js && node --check lib/*.js && echo \"syntax ok\""
+    "test": "for f in bin/*.js lib/*.js; do node --check \"$f\" || exit 1; done && echo \"syntax ok\""
   },
   "dependencies": {},
   "repository": {

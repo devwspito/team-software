@@ -295,6 +295,7 @@ function cmdUninstall(args) {
   console.log(`✓ Agentes eliminados:  ${result.agentsRemoved.length}`);
   console.log(`✓ Commands eliminados: ${result.commandsRemoved.length}`);
   if (result.claudeMdRemoved) console.log(`✓ CLAUDE.md eliminado`);
+  else if (result.claudeMdPreserved) console.log(`· CLAUDE.md PRESERVADO — está customizado (modificado vs la plantilla). Bórralo a mano si quieres.`);
   else if (removeClaudeMd) console.log(`· CLAUDE.md no se tocó (no presente o sin marcador team-software)`);
   if (result.memoryPreservedAt) {
     console.log(`· memory preservado: ${result.memoryPreservedAt}`);

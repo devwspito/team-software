@@ -1,7 +1,7 @@
 {
   "name": "team-software",
-  "version": "0.8.0",
-  "description": "Equipo de ingeniería de software de élite (11 agentes) para Claude Code — Security first, SOLID, DDD, SRP, Clean Code, Modularidad, Orquestación. Workflow completo: requirements-analyst → tech-lead → architect → security → backend/frontend → qa → code-reviewer → devops.",
+  "version": "0.8.1",
+  "description": "Equipo de ingeniería de software de élite (22 agentes + 11 slash commands, sub-teams core/UI-UX/Delivery/Inspection) para Claude Code — Security first, SOLID, DDD, SRP, Clean Code, Modularidad, Orquestación. Modos pipeline, hands-dirty y proactive-discovery.",
   "author": {
     "name": "devwspito",
     "url": "https://github.com/devwspito"
