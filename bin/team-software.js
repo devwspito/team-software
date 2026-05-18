@@ -81,6 +81,7 @@ SLASH COMMANDS (después de install, dentro de Claude Code)
     /team-review [archivos]         Pre-merge: reviewer + security + qa en paralelo
     /team-refactor <target>         Refactor seguro con red de tests
     /team-threat-model <feature>    STRIDE threat modeling
+    /team-security-audit [proy]     Audit de seguridad de proyecto completo + fix de lo crítico
     /team-ship <servicio>           Production readiness check
     /team-ux-audit <target>         Audit UI/UX (5 designers en paralelo)
 
@@ -259,6 +260,7 @@ function cmdList() {
     'team-review': 'Pre-merge: code-reviewer + security-engineer + qa-engineer (paralelo)',
     'team-refactor': 'Refactor seguro coordinado bajo red de tests',
     'team-threat-model': 'STRIDE threat modeling de una feature',
+    'team-security-audit': 'Audit de seguridad de proyecto completo + fix de lo crítico (reutilizable proyecto a proyecto)',
     'team-ship': 'Production readiness check antes de deploy',
     'team-ux-audit': 'Audit UI/UX — diagnostica, prescribe arreglos, implementa',
     'team-fix': 'Bug fix pragmático — debug-engineer (sin pipeline)',

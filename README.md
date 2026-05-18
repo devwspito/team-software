@@ -2,9 +2,11 @@
 
 Equipo de ingeniería de software de élite para [Claude Code](https://docs.claude.com/en/docs/agents/claude-code/overview). Instalable en un comando.
 
-**22 agentes especializados (core + UI/UX + Delivery + Inspection) · 11 slash commands · CLAUDE.md global de principios · memoria persistente.**
+**22 agentes especializados (core + UI/UX + Delivery + Inspection) · 12 slash commands · CLAUDE.md global de principios · memoria persistente.**
 
 > **No negociables:** Security first · SOLID · DDD · SRP · Clean Code · Modularidad · Orquestación.
+
+**v0.9.0:** `/team-security-audit` — ultra auditor-fixer de seguridad de proyecto completo: audita, prioriza y corrige lo crítico, reutilizable proyecto a proyecto.
 
 **v0.8.0:** Sub-team **Inspection** (caza bugs proactivamente) — bug-hunter (static + tooling) + exploratory-tester (user-journey simulation) + `/team-inspect` para encontrar bugs sin que tú los señales.
 
@@ -60,7 +62,7 @@ Si tu Claude Code soporta plugins (>=2.0), también podés instalarlo como plugi
 
 | Modo | Cuándo | Slash commands |
 |---|---|---|
-| **Pipeline** (ceremonia: discovery → plan → design → impl → review) | Greenfield, features nuevas, decisiones grandes | `/team-create`, `/team-feature`, `/team-refactor`, `/team-threat-model`, `/team-review`, `/team-ship`, `/team-ux-audit` |
+| **Pipeline** (ceremonia: discovery → plan → design → impl → review) | Greenfield, features nuevas, decisiones grandes | `/team-create`, `/team-feature`, `/team-refactor`, `/team-threat-model`, `/team-security-audit`, `/team-review`, `/team-ship`, `/team-ux-audit` |
 | **Delivery / hands-dirty** (sin pipeline, "venga vamos") | App rota, features a medias, datos faltantes, debug puntual | `/team-fix`, `/team-finish`, `/team-seed` |
 | **Inspection / proactive** (sin que tú señales nada) | "No sé qué está roto pero algo pasa" | `/team-inspect` |
 
@@ -116,6 +118,7 @@ npx github:devwspito/team-software list
 | `/team-review [archivos]` | Review pre-merge — `code-reviewer` + `security-engineer` + `qa-engineer` en paralelo. Verdict consolidado. |
 | `/team-refactor <target>` | Refactor seguro coordinado con red de tests verificada por `qa-engineer`. Two-phase change (Tidy First). |
 | `/team-threat-model <feature>` | STRIDE threat modeling con `security-engineer`. Controles concretos y testeables. |
+| `/team-security-audit [proyecto]` | **Ultra auditor-fixer de seguridad de un proyecto completo.** Recon → red de seguridad git → audit profundo en paralelo (`security-engineer` STRIDE/OWASP/CWE/privacidad + `bug-hunter` tooling) → informe priorizado → fix de lo crítico → verificación con tests → commit → informe que separa "lo arreglé" de "lo tienes que hacer tú". Reutilizable proyecto a proyecto. |
 | `/team-ship <servicio>` | Production readiness check con `devops-engineer` + `security-engineer` antes de deploy. |
 | `/team-ux-audit <target>` | Audit UI/UX sobre algo que "no tiene sentido". Orquesta los 5 agentes del sub-team UX en paralelo, consolida findings, ofrece implementación con frontend-engineer. |
 | `/team-fix <error>` | **Bug fix pragmático.** Pegas el error/síntoma/screenshot, `debug-engineer` reproduce + arregla + añade regression test. Sin pipeline, una pregunta máximo si no puede reproducir. |
@@ -285,7 +288,7 @@ team-software/
 ├── templates/
 │   ├── CLAUDE.md                 # principios + autonomy + memory protocol
 │   ├── agents/                   # 22 prompts especializados (con autonomy rules)
-│   ├── commands/                 # 11 slash commands interactivos (con todo + memory I/O)
+│   ├── commands/                 # 12 slash commands interactivos (con todo + memory I/O)
 │   └── memory/
 │       ├── INDEX.md              # plantilla inicial
 │       └── PROTOCOL.md           # contrato de uso de memoria
@@ -302,7 +305,7 @@ Diseño inspirado en:
 - [libroforge](https://github.com/devwspito/libroforge) — patrón npx scaffolding + scope user/project
 - [ruflo / claude-flow](https://github.com/ruvnet/ruflo) — plugin manifest + slash commands para orquestación
 
-team-software toma de ambos lo esencial y se queda en flat structure + 11 slash commands. Sin MCP, sin neural training, sin swarm consensus. Un equipo de software profesional, no una constelación.
+team-software toma de ambos lo esencial y se queda en flat structure + 12 slash commands. Sin MCP, sin neural training, sin swarm consensus. Un equipo de software profesional, no una constelación.
 
 ---
 
