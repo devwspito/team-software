@@ -1,13 +1,15 @@
 {
   "name": "team-software",
-  "version": "0.9.0",
-  "description": "Equipo de ingeniería de software de élite (22 agentes + 12 slash commands + 3 sub-teams: UI/UX, Delivery, Inspection + memory persistente) para Claude Code — Security first, SOLID, DDD, SRP, Clean Code, Modularidad, Orquestación. Pipeline + hands-dirty + proactive-discovery modes.",
+  "version": "0.10.0",
+  "description": "Equipo de ingeniería de software de élite (22 agentes + 12 slash commands + 3 sub-teams: UI/UX, Delivery, Inspection + memory persistente) para Claude Code — Spec-Driven Development integrado nativamente en cada team. Security first, SOLID, DDD, SRP, Clean Code, Modularidad, Orquestación. Pipeline + hands-dirty + proactive-discovery modes.",
   "keywords": [
     "claude-code",
     "claude",
     "anthropic",
     "agents",
     "software-engineering",
+    "spec-driven-development",
+    "sdd",
     "ddd",
     "solid",
     "clean-code",

@@ -142,7 +142,22 @@ Tests: <N passed, 0 regresiones>
 <Highs/Mediums no atacados, con file:line>
 ```
 
-**📝 Persiste el audit completo en memory**: `.claude/memory/artifacts/<fecha>-security-audit-<proyecto>.md` (findings + qué se arregló + qué queda). Línea en INDEX. Sirve de baseline para detectar regresiones en futuras re-auditorías.
+**📝 Persiste el audit (doble lugar):**
+
+1. **Como artefacto cross-cutting** en `.claude/memory/artifacts/<fecha>-security-audit-<proyecto>.md` (findings + qué se arregló + qué queda). Línea en INDEX. Baseline para re-auditorías.
+
+2. **Si hay Highs/Mediums pendientes que valen la pena trackear como roadmap**, conviértelo en un spec pipeline-able. Pregunta al usuario:
+   ```
+   ¿Convierto los <N> findings High/Medium open en un spec pipeline-able
+   (specs/NNN-security-audit-<fecha>/) para que el roadmap de remediación
+   se ejecute via /team-feature en futuras sesiones?
+     (a) Sí — pipeline-able
+     (b) No — sólo deja el artifact en memory
+   ```
+   Si (a): crea `specs/NNN-security-audit-<fecha>/`:
+   - `spec.md`: cada finding open es una User Story (P1=Critical/High, P2=Medium, P3=Low). Independent Test = "el finding ya no existe + evidencia de control implementado".
+   - `plan.md`: Summary del audit, Constitution Check, plan de remediación.
+   - `tasks.md`: una tarea por finding, con especialista asignado (`backend-engineer`, `frontend-engineer`, `devops-engineer`, etc.).
 
 ## Reglas duras
 

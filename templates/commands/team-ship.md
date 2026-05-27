@@ -7,14 +7,24 @@ description: Production readiness check interactivo con devops-engineer + securi
 
 El usuario invocó `/team-ship`. **NO escanees archivos ni invoques agentes todavía.**
 
-## Pre-flight: memoria + todo
+## Pre-flight: specs + memoria + todo
 
-1. Lee `.claude/memory/INDEX.md`. Busca:
+1. **Escanea `specs/`** — busca specs activas (`Status: Implementing` o `Ready for Ship`). Si hay una o varias relevantes al servicio que se va a desplegar, **léelas** (al menos `spec.md → Status` y `tasks.md` con conteo de tareas `[x]` vs `[ ]`).
+2. Verifica si existe `.specify/memory/constitution.md`. Si sí, será input para el readiness check (constitution gate post-implementation).
+3. Lee `.claude/memory/INDEX.md`. Busca:
    - `decisions/*infra*` — hosting/CI/secrets decisions ya tomadas
    - `threat-models/*` — controles requeridos que devops debe verificar
    - `decisions/*review*` — issues pendientes que podrían bloquear el deploy
-   Si encuentras algo relevante, **menciónalo al usuario antes de la primera pregunta**.
-2. **Crea un TodoWrite** con: Identify service, Confirm repo state, Run readiness check, Verdict, Deploy decision, Post-deploy smoke (si deploy).
+   - `artifacts/*security-audit*` — findings Critical/High abiertos
+4. Si encuentras specs activas con tareas pendientes, **menciónalo al usuario antes de la primera pregunta**:
+   ```
+   📐 Specs activas que afectan al deploy:
+     • specs/003-stripe-connect/ — tasks 6/8 [x] (2 pendientes en US3)
+     • specs/004-magic-link/    — Status: Ready for Ship, tasks 12/12 [x]
+
+   Si vas a desplegar algo cuya spec aún tiene tareas pendientes, lo marcaré como bloqueo.
+   ```
+5. **Crea un TodoWrite** con: Identify service, Confirm repo state, **SDD gates** (tasks.md verdes + constitution PASS), Run readiness check, Verdict, Deploy decision, Post-deploy smoke (si deploy).
 
 ## Paso 1 — Saludo + primera pregunta (PRIMER mensaje)
 
@@ -65,6 +75,27 @@ Una vez tengas las 3 respuestas:
 
    ¿Confirmo y arranco el check? (sí / corrige X)
    ```
+
+## Paso 2.5 — SDD gates (BLOQUEANTE)
+
+Antes de lanzar al equipo, verifica los gates SDD:
+
+1. **Tasks completas**: para cada spec activa relacionada con el servicio:
+   - ¿`spec.md → Status` es `Ready for Ship` o `Implementing` con todas las tareas necesarias `[x]`?
+   - ¿`tasks.md` tiene tareas `[ ]` pendientes que no son `[POLISH]` o post-MVP?
+   - Si hay pendientes críticas: BLOCK + lista al usuario:
+     ```
+     🚫 Bloqueo SDD — specs/NNN-feature/tasks.md tiene tareas pendientes:
+       [ ] T015 [US1] [backend-engineer] Validar input en endpoint X
+       [ ] T021 [US1] [security-engineer] Smoke security del flujo
+     
+     Estas son del MVP (US1, P1). Tienes que cerrarlas antes del deploy. ¿Lo hago via /team-feature, o lo arreglas tú?
+     ```
+2. **Constitution Check vigente**: si existe `.specify/memory/constitution.md` y la spec tiene `plan.md`:
+   - El `Constitution Check` del plan.md debe estar PASS, O el `Complexity Tracking` debe justificar las violaciones.
+   - Si la constitución cambió desde que se escribió el plan: alerta al usuario que el plan necesita re-check.
+
+Si los gates SDD pasan o no hay spec relevante, continúa.
 
 ## Paso 3 — Lanza devops-engineer + security-engineer en paralelo
 

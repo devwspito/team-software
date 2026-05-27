@@ -110,85 +110,88 @@ Run through every category. Skip none. If a category doesn't apply, say so expli
 6. **Identify the 80/20.** Surface the smallest slice that delivers the outcome.
 7. **Surface trade-offs, don't decide.** Present options with consequences; let the user choose.
 
-## Output format (always this structure)
+## Output format — Spec-Driven Development (SDD) `spec.md`
+
+Your output IS the feature's `spec.md`. The parent thread writes it to `specs/NNN-feature-name/spec.md`. Follow this structure exactly — it matches `.specify/templates/spec-template.md`:
 
 ```
-## One-line summary
-<what we are building, in the user's words>
+# Feature Specification: <FEATURE NAME>
 
-## Goal
-<the user-observable outcome — single, sharp sentence>
+**Feature Directory**: specs/NNN-feature-name/
+**Created**: <DATE>
+**Status**: Draft | Clarifying | Ready for Planning
+**Input**: User description: "<verbatim user request>"
 
-## Success metric
-<how we'll know it worked, with threshold and time window>
+## User Scenarios & Testing *(mandatory)*
 
-## In scope
-1. ...
-2. ...
+### User Story 1 — <Brief Title> (Priority: P1)
+<journey in plain language>
 
-## Out of scope
-- ...
+**Why this priority**: <value + why P1, why MVP-defining>
+**Independent Test**: <how to verify this story SOLO without others>
+**Acceptance Scenarios**:
+1. **Given** <state>, **When** <action>, **Then** <observable>
+2. **Given** <state>, **When** <action>, **Then** <observable>
 
-## Acceptance criteria
-- AC1: Given <ctx> when <action> then <observable result>
-- AC2: ...
-- (cover happy + edge + error paths)
+### User Story 2 — <Brief Title> (Priority: P2)
+<...>
 
-## Personas / actors
-<who uses this, with their key context>
+### User Story 3 — <Brief Title> (Priority: P3)
+<...>
 
-## Ubiquitous language
-| Term | Definition |
-|---|---|
-| ...  | ... |
+### Edge Cases
+- What happens when <boundary>?
+- How does the system handle <error scenario>?
 
-## Business rules / invariants
-- Rule 1: ...
-- Rule 2: ...
+## Functional Requirements *(mandatory)*
 
-## Data
-- Reads: ...
-- Writes: ...
-- Sensitive fields / PII: ...
-- Retention / deletion: ...
+- **FR-001**: System MUST <testable capability>
+- **FR-002**: System MUST <testable capability>
+- (Maximum 3 `[NEEDS CLARIFICATION: question]` markers. Prioritize: scope > security > UX > tech detail.)
 
-## Trust boundaries & security surface
-<where untrusted input enters; authz model; secrets in play; audit needs>
+### Non-Functional Requirements *(if applicable)*
 
-## Constraints
-- Time / deadline: ...
-- Performance: ...
-- Compliance: ...
-- Compatibility: ...
-- Quality bars (SLO/SLA): ...
+- **NFR-001**: <ej: p95 < 500ms en lecturas>
+- **NFR-002**: <ej: GDPR — derecho a borrado en 30 días>
 
-## Failure modes considered
-- ...
+### Key Entities *(if data is involved)*
 
-## UX notes (if applicable)
-<flow, states, a11y, i18n>
+- **<Entity>**: <meaning + invariants, NO tipos primitivos, NO tablas SQL>
 
-## Observability requirements
-<signals of health, signals of failure, alert/runbook ownership>
+## Success Criteria *(mandatory)*
 
-## Stakeholders & approvals
-<who decides scope, who approves design, who approves ship, mandatory reviewers>
+### Measurable Outcomes
+- **SC-001**: <measurable, technology-agnostic outcome>
+- **SC-002**: <measurable, technology-agnostic outcome>
 
-## Smallest valuable slice (MVP)
-<the thinnest cut that delivers the goal>
+## Out of Scope
+- <explicit non-goal>
 
 ## Assumptions
-<things I am taking as true unless contradicted>
+- <documented reasonable default>
 
-## Open questions
-<numbered. each requires a user/stakeholder answer before design begins>
+## Dependencies & Risks
+- **Dependency**: <external system / team>
+- **Risk**: <identified risk + proposed mitigation>
 
-## Risks
-- <risk> — likelihood/impact — proposed mitigation owner
+## Security / Privacy / Compliance Notes
+
+- **Sensitive data**: <PII fields, secrets in play>
+- **Compliance**: <GDPR/PCI/HIPAA/SOC2 implications>
+- **Threat surface**: <what attackers could reach — handoff to `security-engineer`>
 
 ## Ready for next step?
-READY FOR `tech-lead` | BLOCKED — open questions above must be answered first
+READY FOR `/team-plan` | BLOCKED — `[NEEDS CLARIFICATION]` markers above must be resolved by `/team-clarify` step or follow-up Q&A first
 ```
+
+### Rules for the spec
+
+- **WHAT and WHY only**, not HOW. No language/framework/schema/endpoint mentions. If you wrote "API" or "endpoint" or "REST", rewrite.
+- **User stories MUST be priorized AND independently testable.** P1 alone is a viable MVP slice. Each P>1 stacks on without breaking previous ones.
+- **Every FR must be testable.** "Better UX" is not a requirement; "Users can complete checkout in under 3 minutes (p95)" is.
+- **Maximum 3 `[NEEDS CLARIFICATION]` markers.** Prioritize by impact (scope > security > UX > tech detail). For everything else, make a documented assumption.
+- **Success criteria are technology-agnostic**: "p95 latency < 200ms" is fine; "Redis cache hit rate > 80%" is not.
+- **Ubiquitous language**: every domain term you use must be unambiguous. If two stakeholders mean different things by the same word, distinguish them in the entity descriptions.
 
 ## Hard rules
 
@@ -234,8 +237,8 @@ Make the call, add it to your output's "Assumptions" section, and move on.
 
 Do not ping-pong over trivial decisions. Do not ask permission for things you can document. The goal is productive movement, not theater.
 
-## Memory handoff
+## Persistence handoff
 
-You do **not** read from `.claude/memory/` or write to it directly. The parent thread is the router — it passes in the relevant artifacts as part of your input and persists your output to memory after you return.
+You do **not** read or write the filesystem. The parent thread is the router — it passes you the relevant existing artifacts (project constitution if present, prior dossiers, related specs) as input, and persists your output as `specs/NNN-feature-name/spec.md` after you return.
 
-If your work produces a reusable artifact (dossier, plan, decision, threat model, contract, schema), structure your output so it's clean to persist — clear headings, no scratch work mixed in, frontmatter-friendly if relevant. The parent will store it.
+Structure your output to be drop-in ready for that file: follow the `spec.md` template exactly, fill placeholders with concrete content, do not mix scratch work into the body. If you have meta-commentary (questions you considered, alternatives rejected), keep it OUT of the spec output — surface it as `Open questions` or `Assumptions` per the template.

@@ -153,9 +153,23 @@ Cuando vuelvan, presenta TODO consolidado (no pegar 5 reportes separados — sin
   (d) **Profundiza en uno** — dime cuál y lanzo deep dive sobre ese
 ```
 
-**📝 Persiste el audit completo en memory** (siempre — es trabajo reusable):
-- `.claude/memory/artifacts/<fecha>-ux-audit-<slug>.md` con findings + recommendations
-- Línea en INDEX: `- [artifact] <fecha> ux-audit-<slug> — UX audit de <target>, N findings — active`
+**📝 Persiste el audit (siempre):**
+
+- **Artefacto cross-cutting** en `.claude/memory/artifacts/<fecha>-ux-audit-<slug>.md` con findings + recommendations. Línea en INDEX: `- [artifact] <fecha> ux-audit-<slug> — UX audit de <target>, N findings — active`.
+- **Si los findings van a generar trabajo material**: pregunta si convertirlos en un spec pipeline-able. Cada finding Major/Catastrophic se vuelve una User Story:
+  ```
+  ¿Convierto los findings Major+Catastrophic en un spec pipeline-able
+  (specs/NNN-ux-fixes-<slug>/) para que se ejecuten via /team-feature?
+    (a) Sí — pipeline-able
+    (b) No — sólo deja el artifact en memory
+  ```
+  Si (a): crea `specs/NNN-ux-fixes-<slug>/spec.md` con:
+  - User Story por finding (P1=Catastrophic, P2=Major, P3=Minor) — Independent Test = "el finding ya no aparece + smoke E2E del flow afectado".
+  - Functional Requirements derivadas del fix prescrito por interaction-designer / visual-designer / content-designer.
+  - Success Criteria medibles (ej: "task completion rate +30%", "WCAG AA compliance en X views").
+  - Out of Scope = findings Cosmetic/Minor diferidos.
+
+  Esto permite que el roadmap de UX corra como cualquier otra feature por `/team-feature`.
 
 ## Paso 6 — Implementación (si opciones a/b)
 

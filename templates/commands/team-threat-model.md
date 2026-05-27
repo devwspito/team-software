@@ -77,7 +77,12 @@ Código: <path si aplica>
 
 Pídele el reporte STRIDE estándar (assets, trust boundaries, amenazas por categoría, controles requeridos, residual risk).
 
-**📝 Persiste el threat model en memory (SIEMPRE):** `.claude/memory/threat-models/<fecha>-<slug>.md` con frontmatter (slug, category=threat-model, feature, agent=security-engineer, date, status=active, supersedes si reemplaza uno anterior). Línea en INDEX. Los threat models siempre se guardan — son evidencia auditable.
+**📝 Persiste el threat model (SIEMPRE):**
+
+- **Si el target pertenece a una feature con spec activa** (`specs/NNN-feature/` existe — pregúntale al usuario o detéctalo por el path del código): escríbelo como `specs/NNN-feature/threat-model.md`. Es el artefacto SDD canónico — vive con la feature.
+- **Si no hay spec relacionado** (cross-cutting, infra-wide, app-wide): persiste en `.claude/memory/threat-models/<fecha>-<slug>.md` con frontmatter (slug, category=threat-model, feature=null, agent=security-engineer, date, status=active, supersedes si reemplaza uno anterior). Línea en INDEX.
+
+Los threat models siempre se guardan — son evidencia auditable. Si la spec relacionada tiene `plan.md`, añade en ese plan.md un link a `threat-model.md` bajo la sección "Security & Threat Model".
 
 ## Paso 5 — Entrega del modelo + decisión del usuario
 

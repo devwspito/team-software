@@ -78,24 +78,43 @@ Responde "sí — <qué>" o "no" para que security-engineer afile el foco.
 
 Esto le da contexto a `security-engineer` sin obligarte a leer todo primero.
 
-## Paso 4 — Lanza los 3 revisores en paralelo
+## Paso 4 — Detecta spec/constitución de contexto (SDD)
 
-Solo cuando tengas (a) qué revisar confirmado y (b) contexto sensible, invoca los 3 agentes **en un solo turno con 3 Agent calls paralelas**:
+Antes de invocar revisores, detecta si los cambios pertenecen a una feature con spec:
 
-- `code-reviewer` — review estándar (SOLID, clean code, modularidad, SRP, DDD, smoke security).
-- `security-engineer` — focalizado en lo que el usuario marcó como sensible. Si dijo "no", igual hace pass rápido pero no profundiza.
-- `qa-engineer` — coverage gap analysis vs los cambios.
+1. Mira los archivos del diff. Si alguno pertenece a una `specs/NNN-…/` activa (por path, por feature slug, por mención en commits), considera ese spec **el contrato del review**.
+2. Si el diff es sobre `specs/NNN-…/spec.md|plan.md|tasks.md` directamente: el review evalúa esos artefactos en sí.
+3. Verifica si existe `.specify/memory/constitution.md` — si sí, será input para el review (alineamiento con principios).
+4. Si encuentras spec relevante, dilo al usuario:
+   ```
+   📐 Detecté que los cambios tocan: specs/NNN-feature/ — revisaré el diff contra:
+     • spec.md (User Stories + Acceptance Scenarios + FR/NFR/SC)
+     • plan.md (Constitution Check, Phase 0/1 decisions)
+     • tasks.md (tareas marcadas [x] coherentes con el diff)
+     • .specify/memory/constitution.md (si existe)
+   ```
+
+## Paso 5 — Lanza los 3 revisores en paralelo
+
+Solo cuando tengas (a) qué revisar confirmado, (b) contexto sensible, y (c) spec/constitución detectada si aplica, invoca los 3 agentes **en un solo turno con 3 Agent calls paralelas**:
+
+- `code-reviewer` — review estándar (SOLID, clean code, modularidad, SRP, DDD, smoke security) **+ alineamiento con la spec si existe** (¿el código entrega los Acceptance Scenarios? ¿respeta FR-N del spec? ¿el diff matchea las tareas `[x]` del tasks.md? ¿no se desvía del data-model/contracts del plan?).
+- `security-engineer` — focalizado en lo que el usuario marcó como sensible + `specs/NNN/threat-model.md` si existe. Si dijo "no" y no hay threat-model, hace pass rápido sin profundizar.
+- `qa-engineer` — coverage gap analysis vs los cambios + vs los Acceptance Scenarios de spec.md si existe + vs el quickstart.md.
 
 Envía **un solo mensaje breve** al usuario antes de las invocaciones:
 
 ```
 🚀 Lanzados en paralelo: code-reviewer, security-engineer, qa-engineer.
+<si spec relevante:> Revisarán contra specs/NNN-feature/ y la constitución.
 Te entrego el verdict consolidado en breve.
 ```
 
-**📝 Si el verdict es BLOCK o REQUEST CHANGES con findings de seguridad significativos**, guárdalos en `.claude/memory/decisions/<fecha>-review-<slug>.md` para que un futuro `/team-review` los tenga como referencia y el usuario pueda trackear regresiones.
+**📝 Si el verdict es BLOCK o REQUEST CHANGES con findings significativos**, guárdalos en:
+- `specs/NNN-feature/checklists/review-<fecha>.md` si hay spec relacionado (queda con el feature).
+- `.claude/memory/decisions/<fecha>-review-<slug>.md` si es cross-cutting / sin spec.
 
-## Paso 5 — Consolida y entrega verdict
+## Paso 6 — Consolida y entrega verdict
 
 Cuando los 3 terminen, **un solo mensaje** con esta estructura:
 
@@ -103,6 +122,12 @@ Cuando los 3 terminen, **un solo mensaje** con esta estructura:
 ## Verdict consolidado
 
 **[APPROVE | APPROVE WITH NITS | REQUEST CHANGES | BLOCK]**
+
+### 📐 Alignment with spec  *(solo si hay specs/NNN-feature/ relacionado)*
+- Acceptance Scenarios entregados:  N/M  (lista de cuáles faltan)
+- FRs satisfechas:  N/M
+- Constitution Check del plan.md:  PASS / FAIL (justificada?)
+- Tareas del tasks.md cubiertas por el diff:  N/M  [x]
 
 ### 🚫 Blocking issues (N)
 <file:line> — <problema> — <fix sugerido>
@@ -122,6 +147,7 @@ Cuando los 3 terminen, **un solo mensaje** con esta estructura:
 ### Siguiente paso
 - Si BLOCK: arregla y vuelve a correr /team-review.
 - Si APPROVE WITH NITS: los nits son opcionales.
+- Si hay spec relacionado y review APPROVE: actualiza `specs/NNN-feature/spec.md → Status` a `Shipped` (o el siguiente que corresponda).
 ```
 
 ## Si $ARGUMENTS llega no vacío

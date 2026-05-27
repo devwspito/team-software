@@ -86,6 +86,8 @@ Loop: vuelve al Paso 1 con el nuevo error. Cada bug es un commit separado.
 
 **📝 Si el fix es no-trivial** (>1 archivo, root cause interesante, archetype recurrente): persiste en `.claude/memory/decisions/<fecha>-fix-<slug>.md` con el formato del debug-engineer. Línea en INDEX. Útil para detectar regresiones futuras y patrones.
 
+**📐 SDD touch (opcional):** si el bug toca código de una feature con spec activa (`specs/NNN-feature/`), añade una línea en `specs/NNN-feature/checklists/fixes.md` (créalo si no existe) referenciando el fix. No abrimos un spec nuevo para un bug — sólo trazabilidad.
+
 ## Reglas duras
 
 - **NUNCA hagas 3 tandas de preguntas.** Una pregunta máximo si no hay info para reproducir.

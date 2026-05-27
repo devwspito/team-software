@@ -116,9 +116,14 @@ Commit sugerido:
 
 Si algo falla en la verificación: bucle de vuelta al agente correspondiente con el problema específico. **No declares done con flows rotos.**
 
-## Paso 5 — Persistencia en memory
+## Paso 5 — Persistencia
 
-Guarda en `.claude/memory/decisions/<fecha>-finish-<feature-slug>.md`:
+**Si la feature tiene un spec activo** (`specs/NNN-feature/`): no creas spec nuevo. Actualiza:
+- `specs/NNN-feature/tasks.md` — marca como `[x]` las tareas que el finish cubrió.
+- `specs/NNN-feature/checklists/finish-<fecha>.md` — gaps inventariados, cambios aplicados, trade-offs demo-ready ≠ prod-ready, follow-ups deferidos.
+- `specs/NNN-feature/spec.md → Status` — pásalo a `Demo-ready` o el estado correspondiente.
+
+**Si la feature NO tiene spec** (caso típico de demos a medias heredadas): persiste en `.claude/memory/decisions/<fecha>-finish-<feature-slug>.md`:
 - Gaps inventariados
 - Cambios aplicados
 - Trade-offs "demo-ready ≠ prod-ready"

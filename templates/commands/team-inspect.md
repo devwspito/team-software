@@ -126,9 +126,18 @@ No pegues los 2 reportes copy-paste. **Sintetiza** y dedupliques (a veces los do
   (d) **Deep dive en uno** — dime cuál
 ```
 
-**📝 Persiste el inventory en memory (siempre — es valioso para tracking):**
+**📝 Persiste el inventory (siempre — baseline para regresiones):**
 - `.claude/memory/artifacts/<fecha>-bug-hunt-<scope>.md` con findings + recommendations
 - Línea en INDEX: `- [artifact] <fecha> bug-hunt-<scope> — N bugs found, M fixed, K open — active`
+
+**📐 SDD pipeline-able (opcional):** si el inventory es grande y útil como roadmap, pregunta:
+```
+¿Convierto los <N> bugs Catastrophic+Major en un spec pipeline-able
+(specs/NNN-bug-hunt-<scope>/) para que se ejecuten via /team-feature?
+  (a) Sí — pipeline-able
+  (b) No — sólo deja el artifact en memory
+```
+Si (a): cada bug Major+ es una User Story (P1=Catastrophic, P2=Major). Independent Test = "el bug ya no aparece + regression test añadido".
 
 ## Paso 5 — Fix loop (si elige a/b)
 

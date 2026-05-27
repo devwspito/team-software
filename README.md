@@ -2,9 +2,11 @@
 
 Equipo de ingeniería de software de élite para [Claude Code](https://docs.claude.com/en/docs/agents/claude-code/overview). Instalable en un comando.
 
-**22 agentes especializados (core + UI/UX + Delivery + Inspection) · 12 slash commands · CLAUDE.md global de principios · memoria persistente.**
+**22 agentes especializados (core + UI/UX + Delivery + Inspection) · 12 slash commands · Spec-Driven Development integrado · CLAUDE.md global de principios · memoria persistente.**
 
-> **No negociables:** Security first · SOLID · DDD · SRP · Clean Code · Modularidad · Orquestación.
+> **No negociables:** Security first · SOLID · DDD · SRP · Clean Code · Modularidad · Orquestación · **Spec-Driven**.
+
+**v0.10.0:** Spec-Driven Development (SDD) **inyectado nativamente en todos los teams**. `/team-feature`, `/team-create`, `/team-refactor`, `/team-review`, `/team-ship`, `/team-threat-model`, `/team-security-audit`, `/team-ux-audit` ahora producen y consumen artefactos canónicos en `specs/NNN-feature-name/` (spec.md → plan.md → tasks.md), con **Constitution Check** como gate en cada plan. Los modes hands-dirty (`/team-fix`, `/team-finish`, `/team-seed`, `/team-inspect`) referencian specs si existen pero no obligan. Sin commands nuevos — la disciplina vive donde ya estabas trabajando.
 
 **v0.9.0:** `/team-security-audit` — ultra auditor-fixer de seguridad de proyecto completo: audita, prioriza y corrige lo crítico, reutilizable proyecto a proyecto.
 

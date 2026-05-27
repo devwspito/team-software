@@ -122,6 +122,7 @@ function cmdInstall(args) {
   console.log(`  agentes:  ${scope.agentsDir}`);
   console.log(`  commands: ${scope.commandsDir}`);
   console.log(`  memory:   ${scope.memoryDir}`);
+  console.log(`  SDD:      ${scope.specifyDir}`);
   if (installClaudeMd) console.log(`  CLAUDE.md: ${scope.claudeMdPath}`);
   console.log('');
 
@@ -139,6 +140,10 @@ function cmdInstall(args) {
     console.log(`· Memory preservado (artefactos existentes intactos)`);
   } else {
     console.log(`✓ Memory inicializado (INDEX.md + PROTOCOL.md + subdirs)`);
+  }
+  console.log(`✓ SDD templates instalados: ${result.specifyTemplatesCreated.length}/5 (constitution + spec + plan + tasks + checklist)`);
+  if (result.specifyTemplatesSkipped.length) {
+    console.log(`  saltados: ${result.specifyTemplatesSkipped.length} (ya existían — usa --force)`);
   }
   if (installClaudeMd) {
     if (result.claudeMdCreated) console.log(`✓ CLAUDE.md instalado`);
@@ -198,8 +203,11 @@ async function cmdUpdate(args) {
   if (!opts['keep-claude-md']) console.log(`  CLAUDE.md: ${sc.claudeMdPath}`);
   console.log('');
   const label = result.isFreshInstall ? 'creados' : 'actualizados';
-  console.log(`✓ Agentes ${label}:  ${result.agentsRefreshed}/${AGENT_NAMES.length}`);
-  console.log(`✓ Commands ${label}: ${result.commandsRefreshed}/${COMMAND_NAMES.length}`);
+  console.log(`✓ Agentes ${label}:        ${result.agentsRefreshed}/${AGENT_NAMES.length}`);
+  console.log(`✓ Commands ${label}:       ${result.commandsRefreshed}/${COMMAND_NAMES.length}`);
+  if (typeof result.sddTemplatesRefreshed === 'number') {
+    console.log(`✓ SDD templates ${label}: ${result.sddTemplatesRefreshed}/5`);
+  }
   if (opts['keep-claude-md']) {
     console.log(`· CLAUDE.md preservado (--keep-claude-md)`);
   } else if (result.claudeMdRefreshed) {
@@ -224,6 +232,12 @@ function cmdStatus(args) {
   console.log(`team-software status (scope=${scope.name})\n`);
   console.log(`  ${s.claudeMdInstalled ? '✓' : '·'} CLAUDE.md  (${scope.claudeMdPath})`);
   console.log(`  ${s.memoryReady ? '✓' : '·'} memory     (${scope.memoryDir}) — ${s.memoryArtifactCount} artefactos`);
+  const sddReady = s.sddTemplatesMissing.length === 0;
+  console.log(`  ${sddReady ? '✓' : '·'} SDD        (${scope.specifyDir}) — ${s.sddTemplatesInstalled.length}/${s.sddTemplatesInstalled.length + s.sddTemplatesMissing.length} templates`);
+  if (scope.name === 'project') {
+    console.log(`  ${s.constitutionExists ? '✓' : '·'} constitution  (${scope.specifyDir}/memory/constitution.md)`);
+    console.log(`  ${s.specsCount > 0 ? '✓' : '·'} specs/       — ${s.specsCount} feature directorio(s)`);
+  }
   console.log('');
   console.log(`  agentes (${s.agentsInstalled.length}/${AGENT_NAMES.length}):`);
   for (const name of AGENT_NAMES) {
@@ -236,7 +250,7 @@ function cmdStatus(args) {
     const ok = s.commandsInstalled.includes(name);
     console.log(`    ${ok ? '✓' : '·'} /${name}`);
   }
-  const missing = s.agentsMissing.length + s.commandsMissing.length;
+  const missing = s.agentsMissing.length + s.commandsMissing.length + s.sddTemplatesMissing.length;
   if (missing > 0 || !s.memoryReady) {
     console.log('');
     console.log(`  → corre: npx github:devwspito/team-software install --scope ${scope.name}`);
@@ -284,8 +298,10 @@ function cmdUninstall(args) {
   console.log(`> Desinstalando team-software (scope=${scope.name})`);
   console.log(`  agentes:   ${scope.agentsDir}`);
   console.log(`  commands:  ${scope.commandsDir}`);
+  console.log(`  SDD tpls:  ${scope.specifyDir}/templates/`);
   if (removeClaudeMd) console.log(`  CLAUDE.md: ${scope.claudeMdPath} (solo si lleva marcador team-software)`);
   console.log(`  memory:    ${scope.memoryDir} (PRESERVADO — uninstall no toca artefactos)`);
+  console.log(`  SDD data:  ${scope.specifyDir}/memory/ + specs/ (PRESERVADO — constitución y specs son tu trabajo)`);
   console.log('');
 
   if (!opts.yes) {
@@ -294,14 +310,17 @@ function cmdUninstall(args) {
   }
 
   const result = uninstall({ scope, removeClaudeMd });
-  console.log(`✓ Agentes eliminados:  ${result.agentsRemoved.length}`);
-  console.log(`✓ Commands eliminados: ${result.commandsRemoved.length}`);
+  console.log(`✓ Agentes eliminados:      ${result.agentsRemoved.length}`);
+  console.log(`✓ Commands eliminados:     ${result.commandsRemoved.length}`);
+  console.log(`✓ SDD templates eliminados: ${result.specifyTemplatesRemoved.length}`);
   if (result.claudeMdRemoved) console.log(`✓ CLAUDE.md eliminado`);
   else if (result.claudeMdPreserved) console.log(`· CLAUDE.md PRESERVADO — está customizado (modificado vs la plantilla). Bórralo a mano si quieres.`);
   else if (removeClaudeMd) console.log(`· CLAUDE.md no se tocó (no presente o sin marcador team-software)`);
   if (result.memoryPreservedAt) {
     console.log(`· memory preservado: ${result.memoryPreservedAt}`);
-    console.log(`  (si quieres eliminarla manualmente: rm -rf "${result.memoryPreservedAt}")`);
+  }
+  if (result.specifyPreservedAt) {
+    console.log(`· SDD data preservado: ${result.specifyPreservedAt}/memory/ + specs/`);
   }
 }
 

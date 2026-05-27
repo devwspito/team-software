@@ -3,9 +3,11 @@ name: team-create
 description: Crea un proyecto nuevo desde cero — visión → stack → estructura inicial → MVP slice. Interactivo: pregunta primero, no asume nada.
 ---
 
-# /team-create — Proyecto nuevo desde cero (interactivo)
+# /team-create — Proyecto nuevo desde cero (Spec-Driven)
 
 El usuario invocó `/team-create`. **NO escribas archivos, no leas filesystem, no invoques agentes todavía.** Hay un proyecto vacío por crear y necesitas entender qué.
+
+Este flow es **Spec-Driven desde commit 1**: el proyecto nace con `.specify/memory/constitution.md` + `specs/001-mvp/{spec,plan,tasks}.md`. La constitución y el primer spec son entregables del scaffolding, no documentación opcional.
 
 ## Pre-flight: memoria + todo
 
@@ -73,75 +75,85 @@ Si tras las 7 preguntas hay aún algo crítico sin resolver, pregúntalo en **un
 
 **📝 Persiste el contexto inicial en memory:** crea `~/.claude/memory/dossiers/<YYYY-MM-DD>-<slug>.md` con las respuestas del usuario. Slug = kebab del nombre del proyecto propuesto. Línea en INDEX global. Esta es la entrada de pre-discovery, irá enriquecida en el siguiente paso.
 
-## Paso 4 — Discovery profundo con `requirements-analyst`
+## Paso 4 — Discovery profundo → primer `spec.md` con `requirements-analyst`
 
-Con todas las respuestas, invoca `requirements-analyst` pasándole **el resumen estructurado** de lo respondido. Pídele que produzca:
+Con todas las respuestas, invoca `requirements-analyst` pasándole **el resumen estructurado** + el template canónico `spec-template.md`. Le pides el contenido completo de `specs/001-mvp/spec.md` siguiendo SDD:
 
-- Casos de uso primarios priorizados
-- NFRs concretos (latencia, escalabilidad, disponibilidad, seguridad)
-- Modelo de dominio inicial (entidades, value objects)
-- Ubiquitous language
-- Open questions remanentes
+- User stories priorizadas P1 (MVP), P2, P3 — cada una independientemente testeable
+- Functional Requirements (FR-N) y Non-Functional (NFR-N — latencia, escalabilidad, disponibilidad, seguridad)
+- Success Criteria medibles y agnósticos a tecnología (SC-N)
+- Key Entities en lenguaje ubicuo
+- Edge cases, Assumptions, Out of Scope, Dependencies & Risks, Security/Privacy/Compliance Notes
 
-**📝 Actualiza el dossier en memory** con el resultado del requirements-analyst. Sobrescribe el archivo creado en Paso 3.
+**📝 No escribas el archivo aún — el proyecto todavía no existe.** Mantén el contenido en contexto para el Paso 7 (post-aprobación).
 
-## Paso 5 — Stack + arquitectura + datos + seguridad + infra (paralelo)
+## Paso 5 — Constitución del proyecto + design + threat model (paralelo)
 
-**Un solo turno, 4 Agent calls paralelas:**
+**Un solo turno, 5 Agent calls paralelas (en contexto, sin escribir archivos aún):**
 
-- `software-architect` — propone stack justificado + estructura de carpetas + bounded contexts + contratos
-- `database-engineer` — store primario + esquema inicial + estrategia de migraciones
-- `security-engineer` — threat model día cero + modelo auth + datos sensibles + audit
-- `devops-engineer` — hosting + CI desde commit 1 + observabilidad mínima + secrets strategy
+- **Constitución** (tú mismo, no agente) — derivá 4-6 principios no-negociables del proyecto a partir del tipo + compliance + NFRs declarados. Ejemplos: "Test-First para lógica de dominio", "Toda PII vive sólo en bounded context X", "p95 < 200ms en endpoints públicos", "Sin librerías nuevas sin contrato escrito". Estos van a `.specify/memory/constitution.md` (que escribirás en Paso 8).
+- `software-architect` — propone stack justificado + estructura de carpetas + bounded contexts + contenido inicial de `data-model.md` y `contracts/` (signatures only). Aplica DDD/SOLID.
+- `database-engineer` — store primario + esquema inicial + estrategia de migraciones (refina el `data-model.md`).
+- `security-engineer` — threat model día cero (STRIDE) + modelo auth + datos sensibles + audit log. Contenido para `threat-model.md` del primer spec.
+- `devops-engineer` — hosting + CI desde commit 1 + observabilidad mínima + secrets strategy.
 
-**📝 Persiste cada output en memory** (todo en `~/.claude/memory/` porque aún no hay proyecto):
-- `decisions/<fecha>-<slug>-stack.md` (del architect, una por decisión clave)
-- `decisions/<fecha>-<slug>-storage.md` (del database-engineer)
-- `threat-models/<fecha>-<slug>.md` (del security-engineer)
-- `decisions/<fecha>-<slug>-infra.md` (del devops-engineer)
+Mantén todos los outputs en contexto. Aún NO escribas filesystem.
 
-Después del scaffolding (Paso 8), **mueve** todos los artefactos de `~/.claude/memory/` al `.claude/memory/` del proyecto recién creado. La memoria sigue al proyecto.
-
-## Paso 6 — MVP slice con `tech-lead`
+## Paso 6 — Plan + tasks del MVP con `tech-lead`
 
 Con todo lo anterior, `tech-lead` produce:
 
-- El slice mínimo viable (la cosa más pequeña que entrega valor end-to-end)
-- Work breakdown con especialista asignado
-- Orden / paralelismo
-- Definition of done del MVP
+- `plan.md` completo (Technical Context, **Constitution Check** contra los principios del Paso 5, Project Structure, Phase 0/1, Re-check post-design, Complexity Tracking si aplica).
+- `tasks.md` del primer spec (Phase 1 Setup + Phase 2 Foundational + Phase 3 US1=MVP + opcional US2/US3 si entran en el MVP).
 
-**📝 Persiste el plan en memory:** `plans/<fecha>-<slug>.md` con links a dossier + decisions + threat-model.
+`qa-engineer` produce en paralelo `quickstart.md` (smoke E2E del MVP).
+
+Mantén todos los outputs en contexto.
 
 ## Paso 7 — **Confirmación BLOQUEANTE** antes de escribir nada
 
 Presenta TODO en un solo mensaje al usuario:
 
 ```
-## Propuesta de proyecto
+## Propuesta de proyecto (Spec-Driven)
 
 **Nombre sugerido:** <kebab-case>
 **Stack:** <lenguaje + framework + storage + hosting>
 **Estructura:** <bounded contexts identificados>
 
-### MVP slice — esto es lo que voy a generar:
-  • Estructura del repo con DDD layering
-  • package.json/pyproject/etc con deps justificadas
-  • CI desde commit 1 (.github/workflows/...)
+### Constitución del proyecto (.specify/memory/constitution.md)
+  I.   <Principio 1>
+  II.  <Principio 2>
+  III. <Principio 3>
+  IV.  <Principio 4>
+  (heredan los globales de team-software encima)
+
+### Primer spec — specs/001-mvp/
+  spec.md:     <N> user stories (P1=MVP, P2, P3) · <N> FRs · <N> SCs
+  plan.md:     Constitution Check PASS · stack <X> · estructura DDD
+  data-model:  <N> aggregates, <N> entities
+  contracts/:  <archivos>
+  tasks.md:    Setup (<N>) + Foundational (<N>) + US1 (<N>) tareas
+  threat-model: <N> amenazas, <N> controles
+
+### Scaffolding del repo:
+  • Estructura DDD (domain/application/infrastructure/presentation)
+  • Manifiestos con deps mínimas justificadas
+  • CI verde desde commit 1
   • .gitignore + .env.example (sin secretos reales)
-  • README con el stack y cómo arrancar
+  • README con stack y cómo arrancar
   • Migraciones iniciales del esquema
   • Health endpoint + structured logging
   • Auth scaffolding (shape, no implementación)
-  • Implementación del flow primario: <descripción>
+  • Implementación del MVP (US1) end-to-end
 
 ### Decisiones que estoy haciendo (cámbiame si quieres):
   • <decisión 1> — razón
   • <decisión 2> — razón
 
 ### Aplazado a follow-ups (NO va al MVP):
-  • <feature 1>
-  • <feature 2>
+  • <feature 1>  (será spec posterior)
+  • <feature 2>  (será spec posterior)
 
 ### Asunciones:
   • <asunción 1>
@@ -152,22 +164,39 @@ Presenta TODO en un solo mensaje al usuario:
 
 **No escribas un solo archivo hasta tener "sí" o equivalente.**
 
-## Paso 8 — Scaffolding (post-aprobación)
+## Paso 8 — Scaffolding SDD-first (post-aprobación)
 
-Crea:
+**Crea primero los artefactos SDD** (son el contrato del proyecto):
 
-1. Estructura de carpetas según el architect
-2. Manifiestos (package.json / pyproject.toml / Cargo.toml / etc) con deps mínimas
-3. CI pipeline (.github/workflows/ci.yml o equivalente) verde desde commit 1
-4. .gitignore, .env.example, README.md con instrucciones de arranque
-5. Migraciones iniciales (database-engineer)
-6. Health endpoint + structured logging (devops-engineer)
-7. Auth scaffolding (shape) según security-engineer
+1. `.specify/memory/constitution.md` (versión 1.0.0, ratificada hoy)
+2. `.specify/templates/` (copia de los 5 templates: constitution, spec, plan, tasks, checklist — para que el repo sea autocontenido)
+3. `specs/001-mvp/spec.md` (del Paso 4)
+4. `specs/001-mvp/plan.md` (del Paso 6)
+5. `specs/001-mvp/research.md` (del software-architect)
+6. `specs/001-mvp/data-model.md` (de software-architect + database-engineer)
+7. `specs/001-mvp/contracts/` (del software-architect)
+8. `specs/001-mvp/quickstart.md` (del qa-engineer)
+9. `specs/001-mvp/tasks.md` (del tech-lead)
+10. `specs/001-mvp/threat-model.md` (del security-engineer)
+11. `CLAUDE.md` del proyecto con un bloque "Constitución del proyecto" referenciando `.specify/memory/constitution.md`
+12. `.claude/memory/` scaffold (INDEX.md, PROTOCOL.md, subdirs)
 
-Después delega:
-- `backend-engineer` → use cases + domain + adapters
-- `frontend-engineer` → UI del flow primario (si aplica)
+**Después crea el código** siguiendo `tasks.md`:
+
+13. Estructura de carpetas según el architect (DDD layering)
+14. Manifiestos (package.json / pyproject.toml / Cargo.toml / etc) con deps mínimas
+15. CI pipeline (.github/workflows/ci.yml o equivalente) verde desde commit 1
+16. .gitignore, .env.example, README.md con instrucciones de arranque
+17. Migraciones iniciales (database-engineer ejecuta sus tareas del tasks.md)
+18. Health endpoint + structured logging (devops-engineer)
+19. Auth scaffolding (shape) según security-engineer
+
+Después delega las tareas restantes del `tasks.md`:
+- `backend-engineer` → use cases + domain + adapters de US1
+- `frontend-engineer` → UI del flow primario si aplica
 - `qa-engineer` → tests críticos del slice
+
+Marca tareas `[x]` en `tasks.md` conforme se completan.
 
 ## Paso 9 — Review final
 
@@ -183,10 +212,18 @@ Resumen final:
 ```
 ✅ Proyecto creado en <path>
 
-  • <N> archivos generados
-  • CI status: <verde/pending>
-  • Próximo paso recomendado: <qué hacer>
-  • Comandos: `cd <dir> && <run command>`
+  Constitución:  .specify/memory/constitution.md (v1.0.0, <N> principios)
+  Primer spec:   specs/001-mvp/ (Status: Implementing → Shipped tras Paso 9)
+  Tasks:         <N>/<N> [x]
+  CI status:     <verde/pending>
+  Total archivos: <N>
+
+Próximos pasos:
+  • `cd <dir> && <run command>` — arrancar local
+  • `git add . && git commit -m "feat: bootstrap with team-software SDD"` — primer commit
+  • `/team-feature "<segunda feature>"` cuando el MVP esté validado
+
+La constitución y specs/001-mvp viven en el repo. Toda nueva feature pasará por /team-feature, que escribirá `specs/002-…/`, `specs/003-…/`.
 ```
 
 ## Si $ARGUMENTS llega no vacío

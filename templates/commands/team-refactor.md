@@ -140,8 +140,27 @@ Cuando el plan termine, invoca `code-reviewer` para confirmar:
 - No cambio de comportamiento (lo verifican los tests, pero validación cruzada).
 - Mejora real en SOLID/SRP/modularidad/clean code.
 - Smells iniciales resueltos.
+- Si existe `.specify/memory/constitution.md`, alineación con sus principios (no introduce violaciones nuevas).
 
-**📝 Persiste el refactor en memory:** `.claude/memory/decisions/<fecha>-refactor-<slug>.md` con: target, smells encontrados, refactorings aplicados, smells remanentes para futuras pasadas. Añade línea a INDEX.
+**📝 Persiste el refactor como mini-spec en `specs/NNN-refactor-<slug>/`:**
+
+El refactor se persiste como un spec ligero para trazabilidad. Asigna `NNN` escaneando `specs/`. Estructura mínima:
+
+- `specs/NNN-refactor-<slug>/spec.md`:
+  - User Story 1 (P1): "Como mantenedor, quiero que `<target>` tenga complejidad reducida". **Independent Test**: tests verdes idénticos pre/post + métrica de complejidad mejorada.
+  - Functional Requirements: lista de smells resueltos (FR-N: "El módulo X NO tiene <smell>").
+  - Success Criteria: SC-001 "Tests verdes idénticos (sin cambio observable)" · SC-002 "<métrica concreta — LOC reducido, complexity score, dependencias eliminadas>".
+  - Out of Scope: lista de smells diferidos.
+- `specs/NNN-refactor-<slug>/plan.md`: Summary, Constitution Check (PASS o justifica), Phase 1 Design con refactorings nombrados (Fowler catalog).
+- `specs/NNN-refactor-<slug>/tasks.md`: cada paso del refactor como tarea `[x]`.
+
+Confirma al usuario:
+```
+📝 Refactor persistido como spec: specs/NNN-refactor-<slug>/ (Status: Shipped)
+```
+
+Añade línea en `.claude/memory/INDEX.md`:
+`- [spec] <fecha> NNN-refactor-<slug> — refactor de <target>, <N> smells resueltos — shipped`
 
 ## Paso 9 — Entrega
 

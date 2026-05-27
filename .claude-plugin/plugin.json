@@ -1,7 +1,7 @@
 {
   "name": "team-software",
-  "version": "0.9.0",
-  "description": "Equipo de ingeniería de software de élite (22 agentes + 12 slash commands, sub-teams core/UI-UX/Delivery/Inspection) para Claude Code — Security first, SOLID, DDD, SRP, Clean Code, Modularidad, Orquestación. Modos pipeline, hands-dirty y proactive-discovery.",
+  "version": "0.10.0",
+  "description": "Equipo de ingeniería de software de élite (22 agentes + 12 slash commands, sub-teams core/UI-UX/Delivery/Inspection) para Claude Code — Spec-Driven Development integrado en cada team. Security first, SOLID, DDD, SRP, Clean Code, Modularidad, Orquestación. Modos pipeline, hands-dirty y proactive-discovery.",
   "author": {
     "name": "devwspito",
     "url": "https://github.com/devwspito"
@@ -14,6 +14,8 @@
   "license": "MIT",
   "keywords": [
     "software-engineering",
+    "spec-driven-development",
+    "sdd",
     "ddd",
     "solid",
     "clean-code",
