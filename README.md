@@ -60,11 +60,13 @@ curl http://127.0.0.1:8787/health/ready
 
 The Compose service binds only to loopback. Put Tailscale Serve/Funnel or another authenticated TLS gateway in front of it.
 
-Current DGX Spark deployment:
+Current Google Cloud deployment on the Friendog VM:
 
-- dashboard: `https://spark-f97c.tailc2d6d4.ts.net/developer/`
-- MCP: `https://spark-f97c.tailc2d6d4.ts.net/developer/mcp`
+- dashboard: `https://developer-34-22-126-68.sslip.io/`
+- MCP: `https://developer-34-22-126-68.sslip.io/mcp`
 - local health probe: `http://127.0.0.1:8787/health/ready`
+
+The service is not hosted on either development machine. Caddy on `friendog-enterprise` is the only public ingress; the application and its PostgreSQL database remain isolated Docker services.
 
 ## OpenCode
 
@@ -101,6 +103,8 @@ Prompts:
 - `developer-review`
 
 Tools cover projects, specs, runs, evidence, findings, decisions, snapshots, and gates. See [the contract](specs/001-remote-developer-control-plane/contracts/mcp.md).
+
+`developer_compliance_explain` is the mandatory completion check for coding models. It returns every requirement, its current status, why it exists, suggested commands, blocking findings, and ordered remediation actions. A model must repeat it until `decision=pass` before claiming completion.
 
 ## Specification
 

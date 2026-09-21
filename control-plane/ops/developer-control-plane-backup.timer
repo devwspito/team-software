@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily Developer Control Plane database backup
+
+[Timer]
+OnCalendar=*-*-* 03:17:00 UTC
+Persistent=true
+RandomizedDelaySec=900
+Unit=developer-control-plane-backup.service
+
+[Install]
+WantedBy=timers.target

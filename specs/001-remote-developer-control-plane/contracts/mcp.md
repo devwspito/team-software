@@ -28,5 +28,19 @@ Runtime identity hint: `X-Developer-Runtime: <client/model>`
 - `developer_finding_upsert`
 - `developer_decision_record`
 - `developer_gate_evaluate`
+- `developer_compliance_explain`
 
 Tools return both human-readable JSON text and structured content. Mutation tools are idempotent where a natural key exists; immutable evidence, decisions, and runs always create explicit records.
+
+## Compliance response
+
+`developer_compliance_explain(projectSlug)` returns:
+
+- the deterministic gate decision;
+- satisfied, failed, skipped/warning, and missing requirements;
+- why every required evidence kind exists;
+- repository-agnostic commands or actions the runtime should adapt to the project;
+- ordered `nextActions` naming the MCP tool to call after executing real verification;
+- an explicit `llmInstruction` forbidding completion claims until the decision is `pass`.
+
+Warnings and skipped checks are unmet requirements, never successful evidence.

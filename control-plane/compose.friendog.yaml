@@ -1,0 +1,10 @@
+services:
+  control-plane:
+    networks:
+      - default
+      - edge
+
+networks:
+  edge:
+    external: true
+    name: edge

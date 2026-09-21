@@ -86,6 +86,9 @@ button { color: inherit; }
 .evidence-chip { padding: 5px 7px; border-radius: 6px; background: #20252d; color: var(--muted); font: 9px ui-monospace, SFMono-Regular, Menlo, monospace; }
 .evidence-chip.passed { color: var(--accent); background: #a9ff5a0b; }
 .evidence-chip.failed { color: var(--red); background: #ff6b6b0b; }
+.compliance-actions { display: grid; gap: 8px; margin: 16px 0 0; padding: 14px 0 0; border-top: 1px solid var(--line); list-style: none; }
+.compliance-actions li { display: grid; grid-template-columns: 26px 1fr; gap: 8px; align-items: start; color: #aab1ba; font-size: 11px; line-height: 1.45; }
+.compliance-actions strong { color: var(--amber); font: 700 9px ui-monospace, SFMono-Regular, Menlo, monospace; padding-top: 2px; }
 .finding-list article, .evidence-list article { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: center; padding: 9px 0; border-bottom: 1px solid #1f242b; }
 .severity { min-width: 54px; text-align: center; border-radius: 5px; padding: 4px 5px; font-size: 8px; font-weight: 900; text-transform: uppercase; background: #242a32; color: #c4cad2; }
 .severity.critical, .severity.high { color: var(--red); background: #ff6b6b12; }

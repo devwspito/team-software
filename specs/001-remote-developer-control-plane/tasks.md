@@ -14,5 +14,9 @@
 - [x] Register `safent` and `opencode` projects.
 - [x] Configure OpenCode on MacBook Air and DGX.
 - [x] Execute end-to-end MCP acceptance workflow.
+- [x] Migrate the service and PostgreSQL data from DGX Spark to the Friendog Google Cloud VM.
+- [x] Add an LLM-facing compliance explanation with ordered remediation actions.
+- [x] Treat warning and skipped evidence as unmet gate requirements.
+- [x] Configure daily retained database backups on the Friendog VM.
 - [ ] Add signed CI evidence ingestion before critical-tier production use.
 - [ ] Add OIDC/scoped authorization before multi-user use.

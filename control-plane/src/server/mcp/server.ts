@@ -42,7 +42,7 @@ export function createDeveloperMcpServer(repository: Repository, request?: Reque
     { name: 'developer-control-plane', version: '0.1.0' },
     {
       instructions:
-        'Use this server as the durable engineering control plane. Read project context before changing code. Record specs, runs, evidence, findings, and decisions. Never claim a gate passed without recorded evidence.',
+        'MANDATORY ENGINEERING CONTROL: Before editing, read the project snapshot and work from an explicit spec/run. Execute real verification commands and record their actual results. Before claiming complete, tested, accepted, shippable, or deployed, call developer_compliance_explain and follow every nextAction until its decision is pass. A missing, skipped, warning, failed, stale, or fabricated check never counts as success. Never infer compliance from prose or model confidence.',
       cacheHints: {
         'tools/list': { ttlMs: 300_000, cacheScope: 'public' },
         'prompts/list': { ttlMs: 300_000, cacheScope: 'public' },
@@ -344,6 +344,35 @@ function registerTools(server: McpServer, repository: Repository, actor: string)
     async ({ projectSlug }) => {
       const snapshot = await repository.snapshot(projectSlug);
       return result({ gate: snapshot.gate });
+    },
+  );
+
+  server.registerTool(
+    'developer_compliance_explain',
+    {
+      title: 'Explain exactly how to pass compliance',
+      description:
+        'Returns the current deterministic decision, every satisfied/failed/missing requirement, why each check exists, suggested commands, blocking findings, and ordered next actions. Models must call this before claiming completion and repeat until decision=pass.',
+      annotations: readOnlyAnnotations,
+      inputSchema: z.object({ projectSlug: slug }),
+    },
+    async ({ projectSlug }) => {
+      const snapshot = await repository.snapshot(projectSlug);
+      return result({
+        project: {
+          slug: snapshot.project.slug,
+          name: snapshot.project.name,
+          riskTier: snapshot.project.riskTier,
+          status: snapshot.project.status,
+        },
+        activeSpecs: snapshot.specs
+          .filter((spec) => !['shipped', 'cancelled'].includes(spec.state))
+          .map(({ slug: specSlug, title, state }) => ({ slug: specSlug, title, state })),
+        runningRuns: snapshot.runs
+          .filter((run) => run.status === 'running')
+          .map(({ id, specId, workflow, runtime, model, startedAt }) => ({ id, specId, workflow, runtime, model, startedAt })),
+        compliance: snapshot.gate,
+      });
     },
   );
 }

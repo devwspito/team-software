@@ -58,5 +58,17 @@ describe('evaluateGate', () => {
     expect(result.decision).toBe('insufficient-evidence');
     expect(result.missingEvidence).toContain('provenance');
     expect(result.missingEvidence).toContain('mutation');
+    expect(result.nextActions.some((action) => action.tool === 'developer_evidence_record')).toBe(true);
+    expect(result.llmInstruction).toContain('must not claim');
+  });
+
+  it('does not treat warning or skipped evidence as a passing requirement', () => {
+    const evidence: Evidence[] = [
+      { ...baseEvidence, id: 'typecheck', kind: 'typecheck', status: 'warning' },
+      { ...baseEvidence, id: 'unit', kind: 'unit', status: 'skipped' },
+    ];
+    const result = evaluateGate('low', evidence, []);
+    expect(result.decision).toBe('insufficient-evidence');
+    expect(result.missingEvidence).toEqual(['typecheck', 'unit']);
   });
 });

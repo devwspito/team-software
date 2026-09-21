@@ -1,0 +1,16 @@
+[Unit]
+Description=Backup Developer Control Plane PostgreSQL database
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/developer-control-plane/control-plane/ops/backup.sh
+User=root
+Group=root
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+PrivateTmp=true
+NoNewPrivileges=true
+

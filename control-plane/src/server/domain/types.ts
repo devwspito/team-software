@@ -126,6 +126,18 @@ export type GateResult = {
   failedEvidence: EvidenceKind[];
   blockingFindings: Array<Pick<Finding, 'id' | 'severity' | 'title'>>;
   reasons: string[];
+  requirements: Array<{
+    kind: EvidenceKind;
+    status: 'passed' | 'failed' | 'missing';
+    why: string;
+    suggestedCommands: string[];
+  }>;
+  nextActions: Array<{
+    priority: number;
+    action: string;
+    tool: 'developer_evidence_record' | 'developer_finding_upsert' | 'developer_gate_evaluate' | null;
+  }>;
+  llmInstruction: string;
 };
 
 export type ProjectSnapshot = {

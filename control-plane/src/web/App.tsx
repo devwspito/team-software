@@ -7,6 +7,8 @@ type Gate = {
   missingEvidence: string[];
   failedEvidence: string[];
   blockingFindings: Array<{ id: string; severity: string; title: string }>;
+  nextActions: Array<{ priority: number; action: string; tool: string | null }>;
+  llmInstruction: string;
 };
 
 type Project = {
@@ -227,6 +229,16 @@ function ProjectView({ snapshot }: { snapshot: Snapshot }) {
               return <span className={`evidence-chip ${status}`} key={kind}>{kind}</span>;
             })}
           </div>
+          {snapshot.gate.decision !== 'pass' && (
+            <ol className="compliance-actions">
+              {snapshot.gate.nextActions.slice(0, 4).map((action, index) => (
+                <li key={`${action.priority}-${index}`}>
+                  <strong>P{action.priority}</strong>
+                  <span>{action.action}</span>
+                </li>
+              ))}
+            </ol>
+          )}
         </Panel>
 
         <Panel title="Findings" count={openFindings.length}>
