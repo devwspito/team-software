@@ -1,4 +1,4 @@
-FROM node:24.8.0-alpine AS build
+FROM node:26.9.0-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
@@ -6,7 +6,7 @@ COPY tsconfig.base.json tsconfig.server.json tsconfig.web.json vite.config.ts vi
 COPY src ./src
 RUN npm run check
 
-FROM node:24.8.0-alpine AS runtime
+FROM node:26.9.0-alpine AS runtime
 ENV NODE_ENV=production
 WORKDIR /app
 RUN addgroup -S developer && adduser -S -G developer developer
