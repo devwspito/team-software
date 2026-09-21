@@ -1,0 +1,6 @@
+[allowlist]
+description = "Operational secrets are kept only in the ignored local environment file; examples contain non-secret placeholders."
+paths = [
+  '''(^|/)control-plane/\.env$''',
+  '''(^|/)control-plane/\.env\.example$'''
+]

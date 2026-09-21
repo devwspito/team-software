@@ -1,58 +1,16 @@
 {
-  "name": "team-software",
-  "version": "0.10.0",
-  "description": "Equipo de ingeniería de software de élite (22 agentes + 12 slash commands + 3 sub-teams: UI/UX, Delivery, Inspection + memory persistente) para Claude Code — Spec-Driven Development integrado nativamente en cada team. Security first, SOLID, DDD, SRP, Clean Code, Modularidad, Orquestación. Pipeline + hands-dirty + proactive-discovery modes.",
-  "keywords": [
-    "claude-code",
-    "claude",
-    "anthropic",
-    "agents",
-    "software-engineering",
-    "spec-driven-development",
-    "sdd",
-    "ddd",
-    "solid",
-    "clean-code",
-    "security",
-    "code-review",
-    "tech-lead"
-  ],
-  "license": "MIT",
-  "type": "commonjs",
-  "engines": {
-    "node": ">=18.0.0"
-  },
-  "bin": {
-    "team-software": "./bin/team-software.js"
-  },
-  "main": "./lib/index.js",
-  "exports": {
-    ".": "./lib/index.js",
-    "./lib/install": "./lib/install.js",
-    "./lib/update": "./lib/update.js",
-    "./lib/version-check": "./lib/version-check.js",
-    "./lib/status": "./lib/status.js",
-    "./lib/uninstall": "./lib/uninstall.js",
-    "./lib/scope": "./lib/scope.js"
-  },
-  "files": [
-    "bin/",
-    "lib/",
-    "templates/",
-    "README.md",
-    "LICENSE"
-  ],
+  "name": "developer-control-plane",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Remote MCP engineering control plane for spec-driven AI development.",
   "scripts": {
-    "test": "for f in bin/*.js lib/*.js; do node --check \"$f\" || exit 1; done && echo \"syntax ok\""
+    "check": "npm --prefix control-plane run check",
+    "build": "npm --prefix control-plane run build",
+    "test": "npm --prefix control-plane run test",
+    "dev": "npm --prefix control-plane run dev"
   },
-  "dependencies": {},
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/devwspito/team-software.git"
+  "engines": {
+    "node": ">=24"
   },
-  "bugs": {
-    "url": "https://github.com/devwspito/team-software/issues"
-  },
-  "homepage": "https://github.com/devwspito/team-software#readme",
-  "author": "devwspito"
+  "license": "MIT"
 }

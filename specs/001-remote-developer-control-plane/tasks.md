@@ -1,0 +1,18 @@
+# Tasks
+
+- [x] Define constitution and v1 scope.
+- [x] Select MCP 2026-07-28 stateless architecture with legacy compatibility.
+- [x] Implement PostgreSQL schema and constraints.
+- [x] Implement project, spec, run, evidence, finding, decision, and audit repositories.
+- [x] Implement deterministic risk-tier gate.
+- [x] Expose policy/workflow resources, prompts, and structured MCP tools.
+- [x] Implement bearer authentication, origin/host validation, and dashboard session.
+- [x] Implement responsive project dashboard.
+- [x] Add strict typecheck, lint, unit test, audit, and production build gates.
+- [x] Add hardened container and Compose deployment.
+- [x] Deploy on DGX Spark and verify health.
+- [x] Register `safent` and `opencode` projects.
+- [x] Configure OpenCode on MacBook Air and DGX.
+- [x] Execute end-to-end MCP acceptance workflow.
+- [ ] Add signed CI evidence ingestion before critical-tier production use.
+- [ ] Add OIDC/scoped authorization before multi-user use.
