@@ -16,6 +16,24 @@ const slug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).max(80);
 const nonEmpty = z.string().trim().min(1).max(20_000);
 const shortText = z.string().trim().min(1).max(300);
 const actorPattern = /^[a-zA-Z0-9_.:/-]{1,120}$/;
+const readOnlyAnnotations = {
+  readOnlyHint: true,
+  destructiveHint: false,
+  idempotentHint: true,
+  openWorldHint: false,
+} as const;
+const idempotentWriteAnnotations = {
+  readOnlyHint: false,
+  destructiveHint: false,
+  idempotentHint: true,
+  openWorldHint: false,
+} as const;
+const appendWriteAnnotations = {
+  readOnlyHint: false,
+  destructiveHint: false,
+  idempotentHint: false,
+  openWorldHint: false,
+} as const;
 
 export function createDeveloperMcpServer(repository: Repository, request?: Request): McpServer {
   const actorHeader = request?.headers.get('x-developer-runtime') ?? 'mcp-client';
@@ -153,6 +171,7 @@ function registerTools(server: McpServer, repository: Repository, actor: string)
     {
       title: 'Register or update a project',
       description: 'Creates or updates the durable project record. Idempotent by slug.',
+      annotations: idempotentWriteAnnotations,
       inputSchema: z.object({
         slug,
         name: shortText,
@@ -172,6 +191,7 @@ function registerTools(server: McpServer, repository: Repository, actor: string)
     {
       title: 'List projects',
       description: 'Lists the registered engineering projects in dashboard order.',
+      annotations: readOnlyAnnotations,
       inputSchema: z.object({}),
     },
     async () => result({ projects: await repository.listProjects() }),
@@ -182,6 +202,7 @@ function registerTools(server: McpServer, repository: Repository, actor: string)
     {
       title: 'Read complete project context',
       description: 'Returns bounded project state, active specs, recent runs, evidence, findings, and current gate.',
+      annotations: readOnlyAnnotations,
       inputSchema: z.object({ projectSlug: slug }),
     },
     async ({ projectSlug }) => result({ snapshot: await repository.snapshot(projectSlug) }),
@@ -192,6 +213,7 @@ function registerTools(server: McpServer, repository: Repository, actor: string)
     {
       title: 'Create or refine a specification',
       description: 'Creates or updates the spec contract. Idempotent by project and spec slug; does not advance lifecycle state.',
+      annotations: idempotentWriteAnnotations,
       inputSchema: z.object({
         projectSlug: slug,
         slug,
@@ -211,6 +233,7 @@ function registerTools(server: McpServer, repository: Repository, actor: string)
     {
       title: 'Advance or return a specification',
       description: 'Applies the enforced spec state machine. Invalid lifecycle jumps are rejected.',
+      annotations: appendWriteAnnotations,
       inputSchema: z.object({ projectSlug: slug, specSlug: slug, to: z.enum(specStates) }),
     },
     async ({ projectSlug, specSlug, to }) =>
@@ -222,6 +245,7 @@ function registerTools(server: McpServer, repository: Repository, actor: string)
     {
       title: 'Start an engineering run',
       description: 'Starts an auditable workflow execution by a runtime/model.',
+      annotations: appendWriteAnnotations,
       inputSchema: z.object({
         projectSlug: slug,
         specSlug: slug.optional(),
@@ -238,6 +262,7 @@ function registerTools(server: McpServer, repository: Repository, actor: string)
     {
       title: 'Finish an engineering run',
       description: 'Closes a running workflow with an explicit outcome and summary.',
+      annotations: appendWriteAnnotations,
       inputSchema: z.object({
         runId: z.string().uuid(),
         status: z.enum(runStatuses).exclude(['running']),
@@ -252,6 +277,7 @@ function registerTools(server: McpServer, repository: Repository, actor: string)
     {
       title: 'Record verification evidence',
       description: 'Records the actual result of a reproducible check. Never use this tool for planned or fabricated results.',
+      annotations: appendWriteAnnotations,
       inputSchema: z.object({
         projectSlug: slug,
         specSlug: slug.optional(),
@@ -272,6 +298,7 @@ function registerTools(server: McpServer, repository: Repository, actor: string)
     {
       title: 'Record or update a finding',
       description: 'Upserts a defect, security issue, quality risk, or review finding by stable fingerprint.',
+      annotations: idempotentWriteAnnotations,
       inputSchema: z.object({
         projectSlug: slug,
         specSlug: slug.optional(),
@@ -292,6 +319,7 @@ function registerTools(server: McpServer, repository: Repository, actor: string)
     {
       title: 'Record an architecture or product decision',
       description: 'Creates an immutable decision record with context and consequences.',
+      annotations: appendWriteAnnotations,
       inputSchema: z.object({
         projectSlug: slug,
         specSlug: slug.optional(),
@@ -310,6 +338,7 @@ function registerTools(server: McpServer, repository: Repository, actor: string)
     {
       title: 'Evaluate the current quality gate',
       description: 'Computes a deterministic release decision from project risk, latest evidence, and unresolved findings.',
+      annotations: readOnlyAnnotations,
       inputSchema: z.object({ projectSlug: slug }),
     },
     async ({ projectSlug }) => {
