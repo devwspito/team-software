@@ -8,6 +8,7 @@ import type { AppConfig } from '../config.js';
 import type { Database } from '../db/client.js';
 import { Repository } from '../db/repository.js';
 import { createDeveloperMcpServer } from '../mcp/server.js';
+import { getStack, listStacks } from '../stacks/registry.js';
 import {
   apiKeyAuthorized,
   createSessionToken,
@@ -94,6 +95,14 @@ export function createApp(config: AppConfig, database: Database): Hono {
         return context.json({ error: 'not_found' }, 404);
       }
       throw error;
+    }
+  });
+  app.get(route(config.basePath, '/api/stacks'), (context) => context.json({ stacks: listStacks() }));
+  app.get(route(config.basePath, '/api/stacks/:id'), (context) => {
+    try {
+      return context.json({ stack: getStack(context.req.param('id') ?? '') });
+    } catch {
+      return context.json({ error: 'unknown_stack' }, 404);
     }
   });
   app.get(route(config.basePath, '/api/dashboard'), async (context) => {

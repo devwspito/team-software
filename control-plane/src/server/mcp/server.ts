@@ -11,7 +11,9 @@ import {
   specStates,
 } from '../domain/types.js';
 import { policyPack } from '../policy/core.js';
+import { getStack, listStacks, stackIds, stacksForTags } from '../stacks/registry.js';
 
+const stackId = z.enum(stackIds as [string, ...string[]]);
 const slug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).max(80);
 const nonEmpty = z.string().trim().min(1).max(20_000);
 const shortText = z.string().trim().min(1).max(300);
@@ -42,7 +44,7 @@ export function createDeveloperMcpServer(repository: Repository, request?: Reque
     { name: 'developer-control-plane', version: '0.1.0' },
     {
       instructions:
-        'MANDATORY ENGINEERING CONTROL: Before editing, read the project snapshot and work from an explicit spec/run. Execute real verification commands and record their actual results. Before claiming complete, tested, accepted, shippable, or deployed, call developer_compliance_explain and follow every nextAction until its decision is pass. A missing, skipped, warning, failed, stale, or fabricated check never counts as success. Never infer compliance from prose or model confidence.',
+        'MANDATORY ENGINEERING CONTROL: Before editing, read the project snapshot and work from an explicit spec/run. If the project has a `stack:<id>` tag, read that stack with developer_stack_get and follow every rule; its checks are part of the gate. Execute real verification commands and record their actual results. Before claiming complete, tested, accepted, shippable, or deployed, call developer_compliance_explain and follow every nextAction until its decision is pass. A missing, skipped, warning, failed, stale, or fabricated check never counts as success. Never infer compliance from prose or model confidence.',
       cacheHints: {
         'tools/list': { ttlMs: 300_000, cacheScope: 'public' },
         'prompts/list': { ttlMs: 300_000, cacheScope: 'public' },
@@ -58,6 +60,22 @@ export function createDeveloperMcpServer(repository: Repository, request?: Reque
 }
 
 function registerResources(server: McpServer): void {
+  for (const summary of listStacks()) {
+    server.registerResource(
+      `developer-stack-${summary.id}`,
+      `developer://stacks/${summary.id}`,
+      {
+        title: summary.title,
+        description: `Stack pack ${summary.id}@${summary.version}: architecture, technology, team roles, rules with incident history, build gates and bootstrap steps.`,
+        mimeType: 'application/json',
+        cacheHint: { ttlMs: 300_000, cacheScope: 'public' },
+      },
+      (uri) => ({
+        contents: [{ uri: uri.href, mimeType: 'application/json', text: JSON.stringify(getStack(summary.id), null, 2) }],
+      }),
+    );
+  }
+
   server.registerResource(
     'developer-engineering-constitution',
     'developer://policy/core',
@@ -122,6 +140,29 @@ function registerPrompts(server: McpServer): void {
         },
       ],
     }),
+  );
+
+  server.registerPrompt(
+    'developer-new-project-from-stack',
+    {
+      title: 'Start a project on a proven stack',
+      description: 'Bootstraps a new project from a stack pack distilled from a production system.',
+      argsSchema: z.object({ project: slug, stack: stackId, outcome: nonEmpty }),
+    },
+    ({ project, stack, outcome }) => {
+      const pack = getStack(stack);
+      return {
+        messages: [
+          {
+            role: 'user',
+            content: {
+              type: 'text',
+              text: `Project: ${project}\nStack: ${pack.id}@${pack.version} (${pack.title})\nDesired outcome: ${outcome}\n\n1. Call developer_stack_get for ${pack.id} and read it entirely: architecture, technology, team roles, every rule (with its why), checks and bootstrap.\n2. Register the project with developer_project_upsert including the tag "${pack.tag}" so the gate demands the stack evidence.\n3. Create spec 001 for the launch from the bootstrap steps, confirming owner data instead of inventing it.\n4. Follow the bootstrap in order. Each rule is a past production incident: do not relax it without a recorded decision.\n5. Record real evidence for every stack check and call developer_compliance_explain until decision=pass.`,
+            },
+          },
+        ],
+      };
+    },
   );
 
   server.registerPrompt(
@@ -334,6 +375,37 @@ function registerTools(server: McpServer, repository: Repository, actor: string)
   );
 
   server.registerTool(
+    'developer_stack_list',
+    {
+      title: 'List proven stack packs',
+      description: 'Lists reusable build recipes distilled from production projects, with their sections, so a new project can start from what already works.',
+      annotations: readOnlyAnnotations,
+      inputSchema: z.object({}),
+    },
+    () => result({ stacks: listStacks() }),
+  );
+
+  server.registerTool(
+    'developer_stack_get',
+    {
+      title: 'Read a stack pack',
+      description:
+        'Returns a stack pack: architecture, pinned technology, team roles, rules (each with the incident that motivated it and how to apply it), build gates mapped to evidence kinds, required evidence and bootstrap steps. Pass `sections` to read only some rule sections.',
+      annotations: readOnlyAnnotations,
+      inputSchema: z.object({ stack: stackId, sections: z.array(z.string().min(1).max(80)).max(40).optional() }),
+    },
+    ({ stack, sections }) => {
+      const pack = getStack(stack);
+      if (!sections || sections.length === 0) return result({ stack: pack });
+      const unknown = sections.filter((id) => !pack.sections.some((section) => section.id === id));
+      if (unknown.length > 0) {
+        throw new Error(`Unknown sections for ${pack.id}: ${unknown.join(', ')}. Valid: ${pack.sections.map((section) => section.id).join(', ')}`);
+      }
+      return result({ stack: { ...pack, sections: pack.sections.filter((section) => sections.includes(section.id)) } });
+    },
+  );
+
+  server.registerTool(
     'developer_gate_evaluate',
     {
       title: 'Evaluate the current quality gate',
@@ -372,6 +444,9 @@ function registerTools(server: McpServer, repository: Repository, actor: string)
           .filter((run) => run.status === 'running')
           .map(({ id, specId, workflow, runtime, model, startedAt }) => ({ id, specId, workflow, runtime, model, startedAt })),
         compliance: snapshot.gate,
+        stackChecks: stacksForTags(snapshot.project.tags).flatMap((pack) =>
+          pack.checks.map((check) => ({ stack: pack.id, ...check })),
+        ),
       });
     },
   );

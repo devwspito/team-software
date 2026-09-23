@@ -108,12 +108,18 @@ const evidenceGuidance: Record<EvidenceKind, { why: string; suggestedCommands: s
   },
 };
 
+/**
+ * `extraRequired` is the evidence demanded by the stack packs a project opted
+ * into (`stack:<id>` tags). It only ever adds requirements: a stack can make a
+ * low-risk project stricter, never a critical one laxer.
+ */
 export function evaluateGate(
   riskTier: RiskTier,
   evidence: readonly Evidence[],
   findings: readonly Finding[],
+  extraRequired: readonly EvidenceKind[] = [],
 ): GateResult {
-  const requiredEvidence = [...requiredByRisk[riskTier]];
+  const requiredEvidence = [...new Set([...requiredByRisk[riskTier], ...extraRequired])];
   const latestByKind = latestEvidenceByKind(evidence);
   const satisfiedEvidence = requiredEvidence.filter((kind) => latestByKind.get(kind)?.status === 'passed');
   const failedEvidence = requiredEvidence.filter((kind) => latestByKind.get(kind)?.status === 'failed');

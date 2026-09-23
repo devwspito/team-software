@@ -36,6 +36,19 @@ OpenCode / Codex / local runtime
                  PostgreSQL 18
 ```
 
+## Stack packs
+
+Proven build recipes distilled from production projects. A project opts in with a
+`stack:<id>` tag; the gate then also demands the stack's required evidence, and
+`developer_compliance_explain` lists its concrete build gates.
+
+| Stack | Origin | What it covers |
+|---|---|---|
+| `medusa-commerce` | certera-webs (baliri-supp, baliri-care) | Medusa v2 as source of truth, own Stripe checkout service, static Next.js storefronts on Firebase, packs as inventory kits, coupons/price lists, Stripe↔Medusa order and payment reconciliation, invoicing with per-store VAT, waiting room, storefront UI and photography rules, copy rules, build gates, deployment order |
+
+MCP: `developer_stack_list`, `developer_stack_get`, resource `developer://stacks/<id>`,
+prompt `developer-new-project-from-stack`. REST: `GET /api/stacks`, `GET /api/stacks/:id`.
+
 ## Development
 
 Requires Node.js 24+ and Docker.

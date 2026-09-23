@@ -1,4 +1,5 @@
 import { evaluateGate } from '../domain/gates.js';
+import { stackRequiredEvidence } from '../stacks/registry.js';
 import { assertSpecTransition } from '../domain/transitions.js';
 import type {
   Evidence,
@@ -296,7 +297,14 @@ export class Repository {
         FROM findings WHERE project_id = ${project.id} ORDER BY updated_at DESC
       `,
     ]);
-    return { project, specs, runs, evidence, findings, gate: evaluateGate(project.riskTier, evidence, findings) };
+    return {
+      project,
+      specs,
+      runs,
+      evidence,
+      findings,
+      gate: evaluateGate(project.riskTier, evidence, findings, stackRequiredEvidence(project.tags)),
+    };
   }
 
   private async getSpec(projectId: string, slug: string): Promise<Spec> {
