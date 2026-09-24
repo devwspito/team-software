@@ -18,6 +18,16 @@ describe('stack registry', () => {
     }
   });
 
+  it('starts from the template repository instead of writing the stack from scratch', () => {
+    const pack = getStack('medusa-commerce');
+    expect(pack.starter.repository).toBe('github.com/devwspito/commerce-starter');
+    expect(pack.starter.clone).toContain('--template devwspito/commerce-starter');
+    expect(pack.starter.configure).toContain('pnpm nueva-tienda');
+    expect(pack.starter.ownerOnly.length).toBeGreaterThan(0);
+    expect(pack.bootstrap[1]?.step).toContain('starter.clone');
+    expect(listStacks()[0]?.starter).toBe(pack.starter.repository);
+  });
+
   it('keeps section and rule ids unique so runtimes can address them', () => {
     const pack = getStack('medusa-commerce');
     const sectionIds = pack.sections.map((section) => section.id);

@@ -48,12 +48,22 @@ export type StackBootstrapStep = {
   doneWhen: string;
 };
 
+/** Template repository a new project clones instead of writing the stack from scratch. */
+export type StackStarter = {
+  repository: string;
+  clone: string;
+  configure: string;
+  briefTemplate: string;
+  ownerOnly: string[];
+};
+
 export type StackPack = {
   id: string;
   version: string;
   title: string;
   tag: string;
   origin: string;
+  starter: StackStarter;
   useWhen: string[];
   avoidWhen: string[];
   architecture: {
@@ -69,5 +79,6 @@ export type StackPack = {
 };
 
 export type StackSummary = Pick<StackPack, 'id' | 'version' | 'title' | 'tag' | 'useWhen'> & {
+  starter: string;
   sections: Array<Pick<StackSection, 'id' | 'title' | 'summary'>>;
 };

@@ -157,7 +157,7 @@ function registerPrompts(server: McpServer): void {
             role: 'user',
             content: {
               type: 'text',
-              text: `Project: ${project}\nStack: ${pack.id}@${pack.version} (${pack.title})\nDesired outcome: ${outcome}\n\n1. Call developer_stack_get for ${pack.id} and read it entirely: architecture, technology, team roles, every rule (with its why), checks and bootstrap.\n2. Register the project with developer_project_upsert including the tag "${pack.tag}" so the gate demands the stack evidence.\n3. Create spec 001 for the launch from the bootstrap steps, confirming owner data instead of inventing it.\n4. Follow the bootstrap in order. Each rule is a past production incident: do not relax it without a recorded decision.\n5. Record real evidence for every stack check and call developer_compliance_explain until decision=pass.`,
+              text: `Project: ${project}\nStack: ${pack.id}@${pack.version} (${pack.title})\nDesired outcome: ${outcome}\n\n1. Call developer_stack_get for ${pack.id} and read it entirely: architecture, technology, team roles, every rule (with its why), checks and bootstrap.\n2. Register the project with developer_project_upsert including the tag "${pack.tag}" so the gate demands the stack evidence.\n3. Clone the template (starter.clone, ${pack.starter.repository}) and run starter.configure with owner-confirmed data; never write the stack from scratch. Create spec 001 for the launch from the bootstrap steps and hand the owner the starter.ownerOnly checklist.\n4. Follow the bootstrap in order. Each rule is a past production incident: do not relax it without a recorded decision.\n5. Record real evidence for every stack check and call developer_compliance_explain until decision=pass.`,
             },
           },
         ],
@@ -390,7 +390,7 @@ function registerTools(server: McpServer, repository: Repository, actor: string)
     {
       title: 'Read a stack pack',
       description:
-        'Returns a stack pack: architecture, pinned technology, team roles, rules (each with the incident that motivated it and how to apply it), build gates mapped to evidence kinds, required evidence and bootstrap steps. Pass `sections` to read only some rule sections.',
+        'Returns a stack pack: the template repository to clone (starter), architecture, pinned technology, team roles, rules (each with the incident that motivated it and how to apply it), build gates mapped to evidence kinds, required evidence and bootstrap steps. Pass `sections` to read only some rule sections.',
       annotations: readOnlyAnnotations,
       inputSchema: z.object({ stack: stackId, sections: z.array(z.string().min(1).max(80)).max(40).optional() }),
     },

@@ -7,12 +7,13 @@ const packs: readonly StackPack[] = [medusaCommerceStack];
 export const stackIds = packs.map((pack) => pack.id);
 
 export function listStacks(): StackSummary[] {
-  return packs.map(({ id, version, title, tag, useWhen, sections }) => ({
+  return packs.map(({ id, version, title, tag, useWhen, starter, sections }) => ({
     id,
     version,
     title,
     tag,
     useWhen,
+    starter: starter.repository,
     sections: sections.map(({ id: sectionId, title: sectionTitle, summary }) => ({ id: sectionId, title: sectionTitle, summary })),
   }));
 }
